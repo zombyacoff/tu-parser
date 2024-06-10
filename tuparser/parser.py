@@ -87,9 +87,9 @@ class TelegraphParser(ABC):
                 for offset in range(1, self.config.offset_value + 1):
                     for title in self.config.titles:
                         yield (
-                            f"{TELEGRAPH_URL}{title}-{month:02}-{day:02}-{offset}"
+                            f"{TELEGRAPH_URL}/{title}-{month:02}-{day:02}-{offset}"
                             if offset > 1
-                            else f"{TELEGRAPH_URL}{title}-{month:02}-{day:02}"
+                            else f"{TELEGRAPH_URL}/{title}-{month:02}-{day:02}"
                         )
 
     async def __semaphore_process(

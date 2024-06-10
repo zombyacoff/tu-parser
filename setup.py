@@ -1,5 +1,4 @@
-from setuptools import setup
-
+from setuptools import find_packages, setup
 
 VERSION = "0.1.0"
 
@@ -21,7 +20,7 @@ setup(
     long_description=readme(),
     long_description_content_type="text/markdown",
     
-    packages=["tuparser"],
+    packages=find_packages(),
     install_requires=[
         "aiohttp>=3.9.5",
         "bs4>=0.0.2",
