@@ -4,8 +4,8 @@ VERSION = "0.1.0"
 
 
 def readme():
-    with open("README.md", "r") as f:
-        return f.read()
+    with open("README.md", "r") as file:
+        return file.read()
 
 
 setup(
