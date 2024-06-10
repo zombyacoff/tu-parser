@@ -1,40 +1,41 @@
-from dataclasses import dataclass
-
 import aiohttp
 from bs4 import BeautifulSoup
 
-from tuparser.config.base import Config
+from tuparser.config import Config
 from tuparser.file_operations.file_manager import FileManager
-from tuparser.main import run_parser
-from tuparser.parser.base import TelegraphParser
+from tuparser.parser import TelegraphParser, run_parser
 
 
-@dataclass
 class MediaParser(TelegraphParser):
-    main_output_folder: str = "parser-output"
-    output_folder: str = "media"
-    images_folder: str = "images"
-    videos_folder: str = "videos"
+    def __init__(self, config: Config) -> None:
+        super().__init__(config)
+        self.main_output_folder = "parser-output"
+        self.output_folder = "media"
+        self.images_folder = "images"
+        self.videos_folder = "videos"
 
-    async def _process_url(self, url: str, session: aiohttp.ClientSession) -> None:
-        soup = await super()._process_url(url, session)
+    async def process_url(
+        self, url: str, session: aiohttp.ClientSession
+    ) -> None:
+        soup = await super().process_url(url, session)
+        # return if url is not valid
         if soup is None:
             return
 
         folder_url = url[19:]
-        images = self._get_urls(soup.find_all("img"))
-        videos = self._get_urls(soup.find_all("video"))
+        images = self.get_urls(soup.find_all("img"))
+        videos = self.get_urls(soup.find_all("video"))
 
         if images:
-            await self._download_media(
+            await self.download_media(
                 images, self.images_folder, "gif", folder_url, session
             )
         if videos:
-            await self._download_media(
+            await self.download_media(
                 videos, self.videos_folder, "mp4", folder_url, session
             )
 
-    async def _download_media(
+    async def download_media(
         self,
         media: list[str],
         main_folder: str,
@@ -57,22 +58,18 @@ class MediaParser(TelegraphParser):
                     media_file_path = FileManager.join_paths(
                         media_folder_path, media_file_name
                     )
-                    FileManager.save_file(media_file_path, await response.read())
+                    FileManager.save_file(
+                        media_file_path, await response.read()
+                    )
             except aiohttp.client_exceptions.ClientConnectorError:
                 continue
 
-    def _get_urls(self, media: list[BeautifulSoup]) -> list[str] | list[None]:
+    def get_urls(self, media: list[BeautifulSoup]) -> list[str] | list[None]:
         return [
             f"https://telegra.ph{value.get("src")}"
             for value in media
             if not value.get("src").startswith("http")
         ]
-
-    def _get_complete_message(self) -> None:
-        super()._get_complete_message()
-
-    async def main(self) -> None:
-        await super().main()
 
 
 if __name__ == "__main__":

@@ -1,38 +1,40 @@
 import asyncio
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import Generator
 
 import aiohttp
 from bs4 import BeautifulSoup
 
-from ..config.base import Config
-from ..constants import LAUNCH_TIME
-from ..exceptions.config import InvalidWebsiteURLError
-from ..extensions.progress_bar import ProgressBar
-from ..utils import ConsoleColor, get_monthrange, get_time_now
+from .config import Config
 from .constants import (
+    LAUNCH_TIME,
     PARSING_START_MESSAGE,
     SEMAPHORE_MAX_LIMIT,
     SUCCESS_COMPLETE_TITLE,
+    TELEGRAPH_URL,
     TIME_ELAPSED_TEXT,
 )
+from .exceptions.config import (
+    ConfigNotFoundError,
+    InvalidConfigError,
+    InvalidOffsetValueError,
+    InvalidReleaseDateError,
+    InvalidTitleError,
+    InvalidWebsiteURLError,
+)
+from .extensions.progress_bar import ProgressBar
+from .utils import ConsoleColor, get_monthrange, get_time_now
 
 
-@dataclass
 class TelegraphParser(ABC):
-    config: Config
-
-    def __post_init__(self) -> None:
+    def __init__(self, config: Config) -> None:
+        self.config = config
         self.bar_counter = 0
 
     @abstractmethod
-    async def _process_url(
+    async def process_url(
         self, url: str, session: aiohttp.ClientSession
     ) -> BeautifulSoup | None:
-        """Processing the URL —
-        checking for validity, release date,
-        and returning a BeautifulSoup object"""
         try:
             async with session.get(url) as page:
                 if page.status != 200:
@@ -40,19 +42,19 @@ class TelegraphParser(ABC):
                 soup = BeautifulSoup(await page.text(), "html.parser")
         except aiohttp.InvalidURL:
             raise InvalidWebsiteURLError(url=url) from None
+        # except aiohttp.ClientConnectorError:
+        #     return None
 
-        if not self._check_release_date(soup):
+        if not self.__check_release_date(soup):
             return None
 
         return soup
 
-    def _get_progress_bar(self) -> None:
-        """Print the progress bar"""
+    def __get_progress_bar(self) -> None:
         ProgressBar.show(self.bar_counter, self.config.total_urls)
         self.bar_counter += 1
 
-    def _check_release_date(self, soup: BeautifulSoup) -> bool:
-        """Check if the release date is valid"""
+    def __check_release_date(self, soup: BeautifulSoup) -> bool:
         if not self.config.release_date_bool:
             return True
 
@@ -64,14 +66,7 @@ class TelegraphParser(ABC):
         )
         return release_date in self.config.release_date
 
-    @abstractmethod
-    def _get_complete_message(self) -> None:
-        """
-        Abstract method for printing the completion message
-
-        SUCCESSFULLY COMPLETED
-        Time elapsed: 0:00:01.012345
-        """
+    def get_complete_message(self) -> None:
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
             ConsoleColor.paint_success(SUCCESS_COMPLETE_TITLE)
@@ -80,40 +75,70 @@ class TelegraphParser(ABC):
                 ProgressBar.get_length(self.config.total_urls)
                 - len(SUCCESS_COMPLETE_TITLE)
             ),
-            ConsoleColor.paint_info(TIME_ELAPSED_TEXT.format(time=elapsed_time)),
+            ConsoleColor.paint_info(
+                TIME_ELAPSED_TEXT.format(time=elapsed_time)
+            ),
             sep="\n",
         )
 
-    def _generate_urls(self) -> Generator[str, None, None]:
+    def __generate_urls(self) -> Generator[str, None, None]:
         for month in range(1, self.config.total_months + 1):
             for day in range(1, get_monthrange(month) + 1):
                 for offset in range(1, self.config.offset_value + 1):
                     for title in self.config.titles:
                         yield (
-                            f"https://telegra.ph/{title}-{month:02}-{day:02}-{offset}"
+                            f"{TELEGRAPH_URL}{title}-{month:02}-{day:02}-{offset}"
                             if offset > 1
-                            else f"https://telegra.ph/{title}-{month:02}-{day:02}"
+                            else f"{TELEGRAPH_URL}{title}-{month:02}-{day:02}"
                         )
 
-    async def _semaphore_process(
-        self, url: str, semaphore: asyncio.Semaphore, session: aiohttp.ClientSession
+    async def __semaphore_process(
+        self,
+        url: str,
+        semaphore: asyncio.Semaphore,
+        session: aiohttp.ClientSession,
     ) -> None:
         async with semaphore:
-            await self._process_url(url, session)
+            await self.process_url(url, session)
 
-    @abstractmethod
     async def main(self) -> None:
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
         async with aiohttp.ClientSession() as session:
-            urls_generator = self._generate_urls()
+            urls_generator = self.__generate_urls()
             processes = [
-                self._semaphore_process(url, semaphore, session)
+                self.__semaphore_process(url, semaphore, session)
                 for url in urls_generator
             ]
             print(ConsoleColor.paint_info(PARSING_START_MESSAGE))
             # await asyncio.gather(*processes)
             for process in asyncio.as_completed(processes):
-                self._get_progress_bar()
+                if self.config.progress_bar_bool:
+                    self.__get_progress_bar()
                 await process
 
-        self._get_complete_message()
+        self.get_complete_message()
+
+
+def run_parser(
+    config_class: Config,
+    parser_class: TelegraphParser,
+    parser_args: tuple[any] | None = None,
+) -> None:
+    try:
+        config = config_class()
+        parser = (
+            parser_class(config)
+            if parser_args is None
+            else parser_class(config, *parser_args)
+        )
+    except (
+        ConfigNotFoundError,
+        InvalidConfigError,
+        InvalidWebsiteURLError,
+        InvalidReleaseDateError,
+        InvalidOffsetValueError,
+        InvalidTitleError,
+    ) as exception:
+        exception.get_error_message(exception)
+    else:
+        asyncio.run(parser.main())

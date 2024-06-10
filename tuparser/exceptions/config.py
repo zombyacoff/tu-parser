@@ -1,62 +1,67 @@
 from dataclasses import dataclass
 
-from ..utils import ConsoleColor
-from .base import ParserException
+from .base import ApplicationException
 from .messages import (
     CONFIG_FILE_ERROR_MESSAGE,
-    CONFIG_NOT_FOUND_TEXT,
-    INVALID_OFFSET_TEXT,
-    INVALID_RELEASE_DATE_TEXT,
-    INVALID_WEBSITES_TEXT,
+    CONFIG_NOT_FOUND_MESSAGE,
+    INVALID_OFFSET_MESSAGE,
+    INVALID_TITLES_MESSAGE,
+    INVALID_WEBSITES_MESSAGE,
+    INVALID_YEARS_MESSAGE,
 )
 
 
 @dataclass(frozen=True, eq=False)
-class ConfigNotFoundError(ParserException):
+class ConfigNotFoundError(ApplicationException):
+    path: str
+
     @property
     def message(self) -> str:
-        return ConsoleColor.paint_info(CONFIG_NOT_FOUND_TEXT)
+        return CONFIG_NOT_FOUND_MESSAGE.format(path=self.path)
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidConfigError(ParserException):
+class InvalidConfigError(ApplicationException):
     """General exception for configuration file errors"""
 
     error_message: str
 
     @property
     def message(self) -> str:
-        return ConsoleColor.paint_info(
-            CONFIG_FILE_ERROR_MESSAGE.format(error=self.error_message)
-        )
+        return CONFIG_FILE_ERROR_MESSAGE.format(error=self.error_message)
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidOffsetValueError(ParserException):
-    offset_value: any
+class InvalidOffsetValueError(ApplicationException):
+    value: any
 
     @property
     def message(self) -> str:
-        return ConsoleColor.paint_info(
-            INVALID_OFFSET_TEXT.format(offset_value=self.offset_value)
-        )
+        return INVALID_OFFSET_MESSAGE.format(offset_value=self.value)
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidReleaseDateError(ParserException):
-    release_date: any
+class InvalidReleaseDateError(ApplicationException):
+    year: any
 
     @property
     def message(self) -> str:
-        return ConsoleColor.paint_info(
-            INVALID_RELEASE_DATE_TEXT.format(release_date=self.release_date)
-        )
+        return INVALID_YEARS_MESSAGE.format(year=self.release_date)
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidWebsiteURLError(ParserException):
+class InvalidTitleError(ApplicationException):
+    title: any
+
+    @property
+    def message(self) -> str:
+        return INVALID_TITLES_MESSAGE.format(title=self.title)
+
+
+@dataclass(frozen=True, eq=False)
+class InvalidWebsiteURLError(ApplicationException):
     url: str
 
     @property
     def message(self) -> str:
-        return ConsoleColor.paint_info(INVALID_WEBSITES_TEXT.format(url=self.url))
+        return INVALID_WEBSITES_MESSAGE.format(url=self.url)

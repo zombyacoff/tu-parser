@@ -9,8 +9,10 @@ release_date:
   years:
   -
 
-titles: # example: steam; cat
+titles: # example: cat
 -
+
+progress_bar: true
 
 # LP-Parser settings
 # ----------------------------------------------------------------
