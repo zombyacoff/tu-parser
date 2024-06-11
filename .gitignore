@@ -3,4 +3,7 @@
 /build
 /dist
 *egg*
-/parser-output
+
+/*parser*
+/*out*
+/*config*

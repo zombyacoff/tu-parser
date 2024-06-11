@@ -1,21 +1,23 @@
+from dataclasses import dataclass, field
+
 from ..constants import LAUNCH_TIME
 from .file_manager import FileManager
 
 
+@dataclass
 class YAMLOutputFile:
-    def __init__(
-        self, data: dict[str, dict], folder_path: str = "parser-output"
-    ) -> None:
-        self.output_data = data
-        self.output_folder_path = folder_path
+    output_data: dict[any, any]
+    output_folder_path: str = field(default="output")
 
-        self.launch_time_format = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")
-        self.output_file_name = f"{self.launch_time_format}.yml"
+    launch_time_format: str = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")
+    output_file_name: str = f"{launch_time_format}.yml"
+
+    output_file_index: int = 1
+
+    def __post_init__(self) -> None:
         self.output_file_path = FileManager.join_paths(
             self.output_folder_path, self.output_file_name
         )
-
-        self.output_file_index: int = 1
 
     def write_output(self, data: tuple[any]) -> None:
         for i, key in enumerate(self.output_data):

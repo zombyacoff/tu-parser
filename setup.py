@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 
 def readme():
@@ -14,8 +14,8 @@ setup(
     
     author="zombyacoff",
     author_email="zombyacoff@gmail.com",
-    
     url="https://github.com/zombyacoff/tu-parser",
+    
     description="A module that facilitates the creation of Telegra.ph parsing scripts",
     long_description=readme(),
     long_description_content_type="text/markdown",
@@ -28,7 +28,7 @@ setup(
         "termcolor>=2.4.0",
     ],
     python_requires=">=3.12",
-    
+   
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",

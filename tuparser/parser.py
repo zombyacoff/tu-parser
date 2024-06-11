@@ -20,7 +20,6 @@ from .exceptions.config import (
     InvalidOffsetValueError,
     InvalidReleaseDateError,
     InvalidTitleError,
-    InvalidWebsiteURLError,
 )
 from .extensions.progress_bar import ProgressBar
 from .utils import ConsoleColor, get_monthrange, get_time_now
@@ -31,31 +30,29 @@ class TelegraphParser(ABC):
         self.config = config
         self.bar_counter = 0
 
-    @abstractmethod
-    async def process_url(
-        self, url: str, session: aiohttp.ClientSession
-    ) -> BeautifulSoup | None:
-        try:
-            async with session.get(url) as page:
-                if page.status != 200:
-                    return None
-                soup = BeautifulSoup(await page.text(), "html.parser")
-        except aiohttp.InvalidURL:
-            raise InvalidWebsiteURLError(url=url) from None
-        # except aiohttp.ClientConnectorError:
-        #     return None
+    async def process_url(self, url: str) -> None:
+        async with self.session.get(url) as page:
+            if page.status != 200:
+                return None
+            soup = BeautifulSoup(await page.text(), "html.parser")
 
         if not self.__check_release_date(soup):
             return None
 
-        return soup
+        # print(f"Processing {url}")
+        await self.parse(url, soup)
+
+    @abstractmethod
+    async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
 
     def __get_progress_bar(self) -> None:
+        if not self.config.progress_bar:
+            return
         ProgressBar.show(self.bar_counter, self.config.total_urls)
         self.bar_counter += 1
 
     def __check_release_date(self, soup: BeautifulSoup) -> bool:
-        if not self.config.release_date_bool:
+        if not self.config.release_date:
             return True
 
         time_element = soup.select_one("time")
@@ -64,7 +61,7 @@ class TelegraphParser(ABC):
             if time_element
             else LAUNCH_TIME.year
         )
-        return release_date in self.config.release_date
+        return release_date in self.config.years
 
     def get_complete_message(self) -> None:
         elapsed_time = get_time_now() - LAUNCH_TIME
@@ -96,24 +93,22 @@ class TelegraphParser(ABC):
         self,
         url: str,
         semaphore: asyncio.Semaphore,
-        session: aiohttp.ClientSession,
     ) -> None:
         async with semaphore:
-            await self.process_url(url, session)
+            await self.process_url(url)
 
     async def main(self) -> None:
+        print(ConsoleColor.paint_info(PARSING_START_MESSAGE))
+
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
-        async with aiohttp.ClientSession() as session:
-            urls_generator = self.__generate_urls()
+        urls_generator = self.__generate_urls()
+        async with aiohttp.ClientSession() as self.session:
             processes = [
-                self.__semaphore_process(url, semaphore, session)
+                self.__semaphore_process(url, semaphore)
                 for url in urls_generator
             ]
-            print(ConsoleColor.paint_info(PARSING_START_MESSAGE))
-            # await asyncio.gather(*processes)
             for process in asyncio.as_completed(processes):
-                if self.config.progress_bar_bool:
-                    self.__get_progress_bar()
+                self.__get_progress_bar()
                 await process
 
         self.get_complete_message()
@@ -123,22 +118,24 @@ def run_parser(
     config_class: Config,
     parser_class: TelegraphParser,
     parser_args: tuple[any] | None = None,
+    config_path: str = "config.yml",
 ) -> None:
     try:
-        config = config_class()
+        # init classes
+        config = config_class(config_path)
         parser = (
             parser_class(config)
             if parser_args is None
             else parser_class(config, *parser_args)
         )
+        # start parsing
+        asyncio.run(parser.main())
     except (
+        # config exceptions
         ConfigNotFoundError,
         InvalidConfigError,
-        InvalidWebsiteURLError,
         InvalidReleaseDateError,
         InvalidOffsetValueError,
         InvalidTitleError,
     ) as exception:
         exception.get_error_message(exception)
-    else:
-        asyncio.run(parser.main())

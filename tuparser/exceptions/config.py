@@ -6,7 +6,6 @@ from .messages import (
     CONFIG_NOT_FOUND_MESSAGE,
     INVALID_OFFSET_MESSAGE,
     INVALID_TITLES_MESSAGE,
-    INVALID_WEBSITES_MESSAGE,
     INVALID_YEARS_MESSAGE,
 )
 
@@ -37,31 +36,22 @@ class InvalidOffsetValueError(ApplicationException):
 
     @property
     def message(self) -> str:
-        return INVALID_OFFSET_MESSAGE.format(offset_value=self.value)
+        return INVALID_OFFSET_MESSAGE.format(value=self.value)
 
 
 @dataclass(frozen=True, eq=False)
 class InvalidReleaseDateError(ApplicationException):
-    year: any
+    years: any
 
     @property
     def message(self) -> str:
-        return INVALID_YEARS_MESSAGE.format(year=self.release_date)
+        return INVALID_YEARS_MESSAGE.format(years=self.years)
 
 
 @dataclass(frozen=True, eq=False)
 class InvalidTitleError(ApplicationException):
-    title: any
+    titles: any
 
     @property
     def message(self) -> str:
-        return INVALID_TITLES_MESSAGE.format(title=self.title)
-
-
-@dataclass(frozen=True, eq=False)
-class InvalidWebsiteURLError(ApplicationException):
-    url: str
-
-    @property
-    def message(self) -> str:
-        return INVALID_WEBSITES_MESSAGE.format(url=self.url)
+        return INVALID_TITLES_MESSAGE.format(titles=self.titles)
