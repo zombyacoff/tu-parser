@@ -36,7 +36,8 @@ class TelegraphParser(ABC):
         await self.parse(url, soup)
 
     @abstractmethod
-    async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
+    async def parse(self, url: str, soup: BeautifulSoup) -> None:
+        """Entry point for child classes"""
 
     def __get_progress_bar(self) -> None:
         if not self.config.progress_bar:

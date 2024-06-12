@@ -10,9 +10,9 @@ def get_description() -> str:
         return file.read()
 
 
-def get_requirements(file_name: str = "requirements.txt") -> str:
+def get_requirements(file_name: str = "requirements.txt") -> list[str]:
     with open(file_name, "r") as file:
-        return file.read()
+        return file.read().splitlines()
 
 
 setup(
