@@ -7,7 +7,7 @@ class ApplicationException(ABC, Exception):
     @staticmethod
     @abstractmethod
     def get_error_message(exception: "ApplicationException") -> str:
-        """Get the error message for the exception"""
+        """Print the error message for the exception in console"""
 
     # method message
     # should be present in every exception

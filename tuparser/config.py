@@ -68,14 +68,14 @@ class ConfigAPI:
 class Config:
     def __init__(self, config_file_path: str) -> None:
         self.config_file_path = config_file_path
-        self.load_config()
+        self.__load_config()
         try:
             self.parse_config()
         except (KeyError, TypeError) as error:
             raise InvalidConfigError(error)
-        self.calculate_totals()
+        self.__calculate_totals()
 
-    def load_config(self) -> None:
+    def __load_config(self) -> None:
         try:
             self.config = FileManager.load_yaml(self.config_file_path)
         except FileNotFoundError:
@@ -89,7 +89,7 @@ class Config:
             self.config["progress_bar"]
         )
 
-    def calculate_totals(self) -> None:
+    def __calculate_totals(self) -> None:
         self.total_months = (
             LAUNCH_TIME.month
             if self.release_date == [LAUNCH_TIME.year]
