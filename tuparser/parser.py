@@ -14,14 +14,15 @@ from .constants import (
     TELEGRAPH_URL,
     TIME_ELAPSED_TEXT,
 )
-from .exceptions.config import (
+from .exceptions import (
     ConfigNotFoundError,
     InvalidConfigError,
     InvalidOffsetValueError,
     InvalidReleaseDateError,
     InvalidTitleError,
 )
-from .extensions.progress_bar import ProgressBar
+from .extensions import ProgressBar
+from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, get_monthrange, get_time_now
 
 
@@ -39,7 +40,6 @@ class TelegraphParser(ABC):
         if not self.__check_release_date(soup):
             return None
 
-        # print(f"Processing {url}")
         await self.parse(url, soup)
 
     @abstractmethod
@@ -113,6 +113,13 @@ class TelegraphParser(ABC):
 
         self.get_complete_message()
 
+        # complete 'output file' if the child class
+        # has an attribute whose type is YAMLOutputFile
+        for _, attr_value in vars(self).items():
+            if isinstance(attr_value, YAMLOutputFile):
+                attr_value.complete_output()
+                break
+
 
 def run_parser(
     config_class: Config,
@@ -121,14 +128,12 @@ def run_parser(
     config_path: str = "config.yml",
 ) -> None:
     try:
-        # init classes
         config = config_class(config_path)
         parser = (
             parser_class(config)
             if parser_args is None
             else parser_class(config, *parser_args)
         )
-        # start parsing
         asyncio.run(parser.main())
     except (
         # config exceptions

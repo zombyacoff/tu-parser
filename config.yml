@@ -1,0 +1,14 @@
+offset:
+  offset: false
+  value: 2 # min 2 : max 250
+
+release_date:
+  release_date: false
+  years:
+  -
+
+titles:
+-
+
+progress_bar: true
+

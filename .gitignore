@@ -4,6 +4,6 @@
 /dist
 *egg*
 
-/*parser*
 /*out*
-/*config*
+/*lp*
+/tests

@@ -1,32 +1,40 @@
+from textwrap import dedent
+
 from setuptools import find_packages, setup
 
-VERSION = "0.1.1"
+import tuparser
 
 
-def readme():
+def get_description() -> str:
     with open("README.md", "r") as file:
+        return file.read()
+
+
+def get_requirements(file_name: str = "requirements.txt") -> str:
+    with open(file_name, "r") as file:
         return file.read()
 
 
 setup(
     name="tuparser",
-    version=VERSION,
+    version=tuparser.__version__,
     
-    author="zombyacoff",
-    author_email="zombyacoff@gmail.com",
-    url="https://github.com/zombyacoff/tu-parser",
+    author=tuparser.__author__,
+    author_email=tuparser.__email__,
+    url=tuparser.__git_url__,
     
     description="A module that facilitates the creation of Telegra.ph parsing scripts",
-    long_description=readme(),
+    # long_description=get_description(),
+    long_description=dedent(
+        f"""\
+        # Telegraph Universal Parser
+        A module that facilitates the creation of [Telegra.ph]({tuparser.TELEGRAPH_URL}) parsing scripts
+        """
+    ),
     long_description_content_type="text/markdown",
     
     packages=find_packages(),
-    install_requires=[
-        "aiohttp>=3.9.5",
-        "bs4>=0.0.2",
-        "PyYaml>=6.0.1",
-        "termcolor>=2.4.0",
-    ],
+    install_requires=get_requirements(),
     python_requires=">=3.12",
    
     classifiers=[
@@ -34,5 +42,7 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.12",
     ],
-    # keywords="telegra.ph parser scraper",
+    
+    keywords="parser scraper parser-api telegraph telegraph-api",
 )
+

@@ -1,21 +1,24 @@
 from .constants import LAUNCH_TIME
-from .exceptions.config import (
+from .exceptions import (
     ConfigNotFoundError,
     InvalidConfigError,
     InvalidOffsetValueError,
     InvalidReleaseDateError,
     InvalidTitleError,
 )
-from .file_operations.file_manager import FileManager
+from .file_handling import FileManager
 from .utils import get_monthrange
 
 
 class ConfigValidator:
     @staticmethod
     def offset(offset, value: any) -> int:
+        # if offset is disabled in the config
         if not offset:
             return 1
 
+        # at least one offset value is not an integer
+        # and the value is not between 2 and 250
         if not (isinstance(value, int) and 2 <= value <= 250):
             raise InvalidOffsetValueError(value=value)
 
@@ -23,15 +26,19 @@ class ConfigValidator:
 
     @staticmethod
     def years(release_date, years: any) -> list[int] | None:
+        # if release_date is disabled in the config
         if not release_date:
             return None
 
+        # years is not a list
+        # at least one year is not an integer
+        # or is not between 0 and 'CURRENT YEAR'
         if not (
-            isinstance(years, list)  # years is not a list
+            isinstance(years, list)
             and all(
                 isinstance(year, int) and 0 <= year <= LAUNCH_TIME.year
                 for year in years
-            )  # all years are integer and in range 0-250
+            )
         ):
             raise InvalidReleaseDateError(years=years)
 
@@ -39,9 +46,11 @@ class ConfigValidator:
 
     @staticmethod
     def titles(titles: any) -> list[str]:
+        # titles is not a list
+        # and at least one title is None
         if not isinstance(titles, list) or any(
             title is None for title in titles
-        ):  # titles is not a list and at least one title is None
+        ):
             raise InvalidTitleError(titles=titles)
 
         return titles

@@ -3,6 +3,7 @@ from .utils import get_time_now
 LAUNCH_TIME = get_time_now()
 
 SEMAPHORE_MAX_LIMIT = 150
+
 TELEGRAPH_URL = "https://telegra.ph"
 TELEGRAPH_URL_MIRROR = "https://graph.org"
 
