@@ -1,4 +1,3 @@
-from .base import ApplicationException
 from .config import (
     ConfigNotFoundError,
     InvalidConfigError,
@@ -8,7 +7,6 @@ from .config import (
 )
 
 __all__ = [
-    "ApplicationException",
     "ConfigNotFoundError",
     "InvalidConfigError",
     "InvalidOffsetValueError",

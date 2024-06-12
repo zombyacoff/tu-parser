@@ -2,5 +2,5 @@
 A pip-module that facilitates the creation of Telegra.ph parsing scripts
 
 ## Examples
-[Telegraph LP Parser](https://github.com/zombyacoff/telegraph-lp-parser)
-[Telegraph Media Parser](https://github.com/Fru1tApple/telegraph-media-parser)
+* **[Login-Password Parser](https://github.com/zombyacoff/telegraph-lp-parser)**
+* **[Media Parser](https://github.com/Fru1tApple/telegraph-media-parser)**
