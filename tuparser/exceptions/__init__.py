@@ -1,4 +1,5 @@
 from .config import (
+    ConfigException,
     ConfigNotFoundError,
     InvalidConfigError,
     InvalidOffsetValueError,
@@ -7,6 +8,7 @@ from .config import (
 )
 
 __all__ = [
+    "ConfigException",
     "ConfigNotFoundError",
     "InvalidConfigError",
     "InvalidOffsetValueError",

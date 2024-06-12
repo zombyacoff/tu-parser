@@ -1,10 +1,8 @@
-from .constants import (
-    FULL_CHAR,
-    HALF_CHAR,
-    PERCENT_PROGRESS,
-    RAW_PROGRESS_BAR_LENGTH,
-    TOTAL_PROGRESS,
-)
+FULL_CHAR = "█"
+HALF_CHAR = "▒"
+TOTAL_PROGRESS = "[{current}/{total}]"  # [15/100]
+PERCENT_PROGRESS = "[{percent:.2f}%]"  # [15.00%]
+RAW_PROGRESS_BAR_LENGTH = 64
 
 
 class ProgressBar:

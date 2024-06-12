@@ -10,44 +10,44 @@ from .file_handling import FileManager
 from .utils import get_monthrange
 
 
-class ConfigValidator:
+class ConfigAPI:
     @staticmethod
-    def offset(offset, value: any) -> int:
+    def get_offset(offset: any) -> int:
         # if offset is disabled in the config
-        if not offset:
+        if offset is False:
             return 1
 
         # at least one offset value is not an integer
-        # and the value is not between 2 and 250
-        if not (isinstance(value, int) and 2 <= value <= 250):
-            raise InvalidOffsetValueError(value=value)
+        # or the value is not between 2 and 250
+        if not (isinstance(offset, int) and 2 <= offset <= 250):
+            raise InvalidOffsetValueError(value=offset)
 
-        return value
+        return offset
 
     @staticmethod
-    def years(release_date, years: any) -> list[int] | None:
+    def get_years(release_date: any) -> list[int] | None:
         # if release_date is disabled in the config
-        if not release_date:
+        if release_date is False:
             return None
 
-        # years is not a list
+        # release_date is not a list
         # at least one year is not an integer
         # or is not between 0 and 'CURRENT YEAR'
         if not (
-            isinstance(years, list)
+            isinstance(release_date, list)
             and all(
                 isinstance(year, int) and 0 <= year <= LAUNCH_TIME.year
-                for year in years
+                for year in release_date
             )
         ):
-            raise InvalidReleaseDateError(years=years)
+            raise InvalidReleaseDateError(years=release_date)
 
-        return years
+        return release_date
 
     @staticmethod
-    def titles(titles: any) -> list[str]:
+    def get_titles(titles: any) -> list[str]:
         # titles is not a list
-        # and at least one title is None
+        # or at least one title is None
         if not isinstance(titles, list) or any(
             title is None for title in titles
         ):
@@ -62,8 +62,8 @@ class Config:
         self.load_config()
         try:
             self.parse_config()
-        except (KeyError, TypeError) as e:
-            raise InvalidConfigError(e)
+        except (KeyError, TypeError) as error:
+            raise InvalidConfigError(error)
         self.calculate_totals()
 
     def load_config(self) -> None:
@@ -73,21 +73,15 @@ class Config:
             raise ConfigNotFoundError(path=self.config_file_path)
 
     def parse_config(self) -> None:
-        self.offset = self.config["offset"]["offset"]
-        self.offset_value = ConfigValidator.offset(
-            self.offset, self.config["offset"]["value"]
-        )
-        self.release_date = self.config["release_date"]["release_date"]
-        self.years = ConfigValidator.years(
-            self.release_date, self.config["release_date"]["years"]
-        )
-        self.titles = ConfigValidator.titles(self.config["titles"])
+        self.offset = ConfigAPI.get_offset(self.config["offset"])
+        self.release_date = ConfigAPI.get_years(self.config["release_date"])
+        self.titles = ConfigAPI.get_titles(self.config["titles"])
         self.progress_bar = self.config["progress_bar"]
 
     def calculate_totals(self) -> None:
         self.total_months = (
             LAUNCH_TIME.month
-            if self.release_date and self.years == [LAUNCH_TIME.year]
+            if self.release_date == [LAUNCH_TIME.year]
             else 12
         )
         self.total_days = (
@@ -98,6 +92,4 @@ class Config:
             if self.total_months != 12
             else 366
         )
-        self.total_urls = (
-            len(self.titles) * self.offset_value * self.total_days
-        )
+        self.total_urls = len(self.titles) * self.offset * self.total_days

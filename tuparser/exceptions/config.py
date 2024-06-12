@@ -10,8 +10,12 @@ from .messages import (
 )
 
 
+class ConfigException(ApplicationException):
+    """General exception for configuration file errors"""
+
+
 @dataclass(frozen=True, eq=False)
-class ConfigNotFoundError(ApplicationException):
+class ConfigNotFoundError(ConfigException):
     path: str
 
     @property
@@ -20,9 +24,7 @@ class ConfigNotFoundError(ApplicationException):
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidConfigError(ApplicationException):
-    """General exception for configuration file errors"""
-
+class InvalidConfigError(ConfigException):
     error_message: str
 
     @property
@@ -31,7 +33,7 @@ class InvalidConfigError(ApplicationException):
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidOffsetValueError(ApplicationException):
+class InvalidOffsetValueError(ConfigException):
     value: any
 
     @property
@@ -40,7 +42,7 @@ class InvalidOffsetValueError(ApplicationException):
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidReleaseDateError(ApplicationException):
+class InvalidReleaseDateError(ConfigException):
     years: any
 
     @property
@@ -49,7 +51,7 @@ class InvalidReleaseDateError(ApplicationException):
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidTitleError(ApplicationException):
+class InvalidTitleError(ConfigException):
     titles: any
 
     @property

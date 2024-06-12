@@ -1,14 +1,10 @@
-offset:
-  offset: false
-  value: 2 # min 2 : max 250
+offset: false
 
-release_date:
-  release_date: false
-  years:
-  -
+release_date: false
+
+progress_bar: true
 
 titles:
 -
 
-progress_bar: true
 

@@ -6,24 +6,18 @@ import aiohttp
 from bs4 import BeautifulSoup
 
 from .config import Config
-from .constants import (
-    LAUNCH_TIME,
-    PARSING_START_MESSAGE,
-    SEMAPHORE_MAX_LIMIT,
-    SUCCESS_COMPLETE_TITLE,
-    TELEGRAPH_URL,
-    TIME_ELAPSED_TEXT,
-)
-from .exceptions import (
-    ConfigNotFoundError,
-    InvalidConfigError,
-    InvalidOffsetValueError,
-    InvalidReleaseDateError,
-    InvalidTitleError,
-)
+from .constants import LAUNCH_TIME, TELEGRAPH_URL
+from .exceptions import ConfigException
 from .extensions import ProgressBar
 from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, get_monthrange, get_time_now
+
+
+SEMAPHORE_MAX_LIMIT = 150
+PARSING_START_MESSAGE = """Parsing has started...
+Do not turn off the program until the process is completed!\n"""
+SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
+TIME_ELAPSED_TEXT = "Time elapsed: {time}"
 
 
 class TelegraphParser(ABC):
@@ -38,7 +32,7 @@ class TelegraphParser(ABC):
             soup = BeautifulSoup(await page.text(), "html.parser")
 
         if not self.__check_release_date(soup):
-            return None
+            return
 
         await self.parse(url, soup)
 
@@ -52,7 +46,7 @@ class TelegraphParser(ABC):
         self.bar_counter += 1
 
     def __check_release_date(self, soup: BeautifulSoup) -> bool:
-        if not self.config.release_date:
+        if self.config.release_date is None:
             return True
 
         time_element = soup.select_one("time")
@@ -61,7 +55,7 @@ class TelegraphParser(ABC):
             if time_element
             else LAUNCH_TIME.year
         )
-        return release_date in self.config.years
+        return release_date in self.config.release_date
 
     def get_complete_message(self) -> None:
         elapsed_time = get_time_now() - LAUNCH_TIME
@@ -81,7 +75,7 @@ class TelegraphParser(ABC):
     def __generate_urls(self) -> Generator[str, None, None]:
         for month in range(1, self.config.total_months + 1):
             for day in range(1, get_monthrange(month) + 1):
-                for offset in range(1, self.config.offset_value + 1):
+                for offset in range(1, self.config.offset + 1):
                     for title in self.config.titles:
                         yield (
                             f"{TELEGRAPH_URL}/{title}-{month:02}-{day:02}-{offset}"
@@ -135,12 +129,5 @@ def run_parser(
             else parser_class(config, *parser_args)
         )
         asyncio.run(parser.main())
-    except (
-        # config exceptions
-        ConfigNotFoundError,
-        InvalidConfigError,
-        InvalidReleaseDateError,
-        InvalidOffsetValueError,
-        InvalidTitleError,
-    ) as exception:
+    except ConfigException as exception:
         exception.get_error_message(exception)
