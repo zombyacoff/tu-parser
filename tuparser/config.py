@@ -3,6 +3,7 @@ from .exceptions import (
     ConfigNotFoundError,
     InvalidConfigError,
     InvalidOffsetValueError,
+    InvalidProgressBarError,
     InvalidReleaseDateError,
     InvalidTitleError,
 )
@@ -55,6 +56,14 @@ class ConfigAPI:
 
         return titles
 
+    @staticmethod
+    def validate_progress_bar(progress_bar: any) -> bool:
+        # if progress_bar is not a boolean
+        if not isinstance(progress_bar, bool):
+            raise InvalidProgressBarError(value=progress_bar)
+
+        return progress_bar
+
 
 class Config:
     def __init__(self, config_file_path: str) -> None:
@@ -76,7 +85,9 @@ class Config:
         self.offset = ConfigAPI.get_offset(self.config["offset"])
         self.release_date = ConfigAPI.get_years(self.config["release_date"])
         self.titles = ConfigAPI.get_titles(self.config["titles"])
-        self.progress_bar = self.config["progress_bar"]
+        self.progress_bar = ConfigAPI.validate_progress_bar(
+            self.config["progress_bar"]
+        )
 
     def calculate_totals(self) -> None:
         self.total_months = (

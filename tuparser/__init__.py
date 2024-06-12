@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 # This information is used in the setup.py file:
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __author__ = "zombyacoff"
 __email__ = "zombyacoff@gmail.com"
 __git_url__ = "https://github.com/zombyacoff/tu-parser"

@@ -8,6 +8,7 @@ from .file_manager import FileManager
 class YAMLOutputFile:
     data: dict[any, any]
     folder_path: str = field(default="output")
+
     name: str = f"{LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")}.yml"
     index: int = 1
 

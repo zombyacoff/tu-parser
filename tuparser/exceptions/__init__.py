@@ -3,6 +3,7 @@ from .config import (
     ConfigNotFoundError,
     InvalidConfigError,
     InvalidOffsetValueError,
+    InvalidProgressBarError,
     InvalidReleaseDateError,
     InvalidTitleError,
 )
@@ -14,4 +15,5 @@ __all__ = [
     "InvalidOffsetValueError",
     "InvalidReleaseDateError",
     "InvalidTitleError",
+    "InvalidProgressBarError",
 ]

@@ -1,18 +1,16 @@
 from abc import ABC, abstractmethod
 
-from ..utils import ConsoleColor
-from .messages import ERROR_TITLE
-
 
 class ApplicationException(ABC, Exception):
+    # method get_error_message
+    # should be present in every GENERAL exception
     @staticmethod
+    @abstractmethod
     def get_error_message(exception: "ApplicationException") -> str:
-        print(
-            ConsoleColor.paint_error(ERROR_TITLE),
-            ConsoleColor.paint_info(exception.message),
-            sep="\n",
-        )
+        """Get the error message for the exception"""
 
+    # method message
+    # should be present in every exception
     @property
     @abstractmethod
     def message(self) -> str:

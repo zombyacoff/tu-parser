@@ -12,7 +12,6 @@ from .extensions import ProgressBar
 from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, get_monthrange, get_time_now
 
-
 SEMAPHORE_MAX_LIMIT = 150
 PARSING_START_MESSAGE = """Parsing has started...
 Do not turn off the program until the process is completed!\n"""
@@ -107,7 +106,7 @@ class TelegraphParser(ABC):
 
         self.get_complete_message()
 
-        # complete 'output file' if the child class
+        # complete 'output file' if child class
         # has an attribute whose type is YAMLOutputFile
         for _, attr_value in vars(self).items():
             if isinstance(attr_value, YAMLOutputFile):
