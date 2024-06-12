@@ -13,7 +13,7 @@ def get_description() -> str:
 def get_requirements(file_name: str = "requirements.txt") -> list[str]:
     with open(file_name, "r") as file:
         return file.read().splitlines()
-
+    
 
 setup(
     name="tuparser",
@@ -36,7 +36,7 @@ setup(
     packages=find_packages(),
     install_requires=get_requirements(),
     python_requires=">=3.12",
-   
+    
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
