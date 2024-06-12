@@ -25,10 +25,10 @@ class TelegraphParser(ABC):
         self.config = config
         self.bar_counter = 0
 
-    async def process_url(self, url: str) -> None:
+    async def __process_url(self, url: str) -> None:
         async with self.session.get(url) as page:
             if page.status != 200:
-                return None
+                return
             soup = BeautifulSoup(await page.text(), "html.parser")
 
         if not self.__check_release_date(soup):
@@ -89,7 +89,7 @@ class TelegraphParser(ABC):
         semaphore: asyncio.Semaphore,
     ) -> None:
         async with semaphore:
-            await self.process_url(url)
+            await self.__process_url(url)
 
     async def main(self) -> None:
         print(ConsoleColor.paint_info(PARSING_START_MESSAGE))
