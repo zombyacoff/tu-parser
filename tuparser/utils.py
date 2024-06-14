@@ -1,12 +1,12 @@
 import re
 from calendar import monthrange
 from datetime import datetime
+from typing import Callable
 
 from termcolor import colored
 
 
 def get_time_now() -> datetime:
-    """Returns the current time as a datetime object"""
     return datetime.now()
 
 
@@ -16,11 +16,22 @@ def get_monthrange(month: int) -> int:
 
 
 def compile_regex(regex: str) -> re.Pattern:
-    """Compiles a regex and returns a re.Pattern object"""
     return re.compile(regex)
 
 
+def call_counter(func: Callable) -> Callable:
+    """Decorator that counts the number of times a function is called"""
+
+    def wrapper(*args, **kwargs) -> int:
+        wrapper.calls += 1
+        return func(*args, **kwargs)
+
+    wrapper.calls = 0
+    return wrapper
+
+
 class ConsoleColor:
+
     @staticmethod
     def paint_success(text: str) -> str:
         """Paints the given text in bold green"""

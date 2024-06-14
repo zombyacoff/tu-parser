@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 
 from ..constants import LAUNCH_TIME
+from ..utils import call_counter
 from .file_manager import FileManager
 
 
@@ -10,16 +11,32 @@ class YAMLOutputFile:
     folder_path: str = field(default="output")
 
     name: str = f"{LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")}.yml"
-    index: int = 1
 
     def __post_init__(self) -> None:
         self.file_path = FileManager.join_paths(self.folder_path, self.name)
 
-    def write_output(self, data: tuple[any]) -> None:
+    @call_counter
+    def write_data(self, data: any) -> None:
+        """Writes data to the dictionary 'data'
+        
+        :param data: data to write. If multiple values need to be written,
+        they should be passed as a tuple.
+        
+        Example:
+            write_data(('Alexey', 'Yaroslav', 'TUParser')) - multiple values are passed,
+            and they are written to the dictionary keys in order: 
+            'Alexey' to the first key, 'Yaroslav' to the second, 'TUParser' to the third.
+            NOTE: the dictionary should have at least as many keys as the values passed.
+    
+            write_data('Alexey') - a single value, written to the 1st key of the dictionary. 
+            No further operations are performed.
+        """
+        if not isinstance(data, tuple):
+            self.data[list(data.keys())[0]] = data
+            return
         for i, key in enumerate(self.data):
-            self.data[key][self.index] = data[i]
-        self.index += 1
+            self.data[key][self.write_data.calls] = data[i]
 
-    def complete_output(self) -> None:
+    def complete(self) -> None:
         FileManager.create_folder(self.folder_path)
         FileManager.dump_yaml(self.file_path, self.data)
