@@ -12,6 +12,8 @@ from .extensions import ProgressBar
 from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, call_counter, get_monthrange, get_time_now
 
+__all__ = ["TelegraphParser", "run_parser"]
+
 SEMAPHORE_MAX_LIMIT = 150
 PARSING_START_MESSAGE = """Parsing has started...
 Do not turn off the program until the process is completed!\n"""

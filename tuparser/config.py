@@ -4,6 +4,8 @@ from .file_handling import FileManager
 from .utils import get_monthrange
 from .validator import validate
 
+__all__ = ["Config"]
+
 INVALID_OFFSET_MESSAGE = "Invalid offset value: {value}\n(value must be an integer greater than 2 and less than 250)"
 INVALID_YEARS_MESSAGE = "Invalid years in release date: {value}"
 INVALID_TITLES_MESSAGE = "Invalid titles: {value}"
