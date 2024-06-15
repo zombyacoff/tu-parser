@@ -1,71 +1,19 @@
 from .constants import LAUNCH_TIME
-from .exceptions import (
-    ConfigNotFoundError,
-    InvalidConfigError,
-    InvalidOffsetValueError,
-    InvalidProgressBarError,
-    InvalidReleaseDateError,
-    InvalidTitleError,
-)
+from .exceptions import ConfigNotFoundError, InvalidConfigError
 from .file_handling import FileManager
 from .utils import get_monthrange
+from .validator import validate
 
+__all__ = ["Config"]
 
-class ConfigAPI:
-    @staticmethod
-    def get_offset(offset: any) -> int:
-        # if offset is disabled in the config
-        if offset is False:
-            return 1
-
-        # at least one offset value is not an integer
-        # or the value is not between 2 and 250
-        if not (isinstance(offset, int) and 2 <= offset <= 250):
-            raise InvalidOffsetValueError(value=offset)
-
-        return offset
-
-    @staticmethod
-    def get_years(release_date: any) -> list[int] | None:
-        # if release_date is disabled in the config
-        if release_date is False:
-            return None
-
-        # release_date is not a list
-        # at least one year is not an integer
-        # or is not between 0 and 'CURRENT YEAR'
-        if not (
-            isinstance(release_date, list)
-            and all(
-                isinstance(year, int) and 0 <= year <= LAUNCH_TIME.year
-                for year in release_date
-            )
-        ):
-            raise InvalidReleaseDateError(years=release_date)
-
-        return release_date
-
-    @staticmethod
-    def get_titles(titles: any) -> list[str]:
-        # titles is not a list
-        # or at least one title is None
-        if not isinstance(titles, list) or any(
-            title is None for title in titles
-        ):
-            raise InvalidTitleError(titles=titles)
-
-        return titles
-
-    @staticmethod
-    def validate_progress_bar(progress_bar: any) -> bool:
-        # if progress_bar is not a boolean
-        if not isinstance(progress_bar, bool):
-            raise InvalidProgressBarError(value=progress_bar)
-
-        return progress_bar
+INVALID_OFFSET_MESSAGE = "Invalid offset value: {value}\n(value must be an integer greater than 2 and less than 250)"
+INVALID_YEARS_MESSAGE = "Invalid years in release date: {value}"
+INVALID_TITLES_MESSAGE = "Invalid titles: {value}"
+INVALID_PROGRESS_BAR_MESSAGE = "Invalid progress bar value: {value}\n(value must be a boolean)"
 
 
 class Config:
+
     def __init__(self, config_file_path: str) -> None:
         self.config_file_path = config_file_path
         self.__load_config()
@@ -76,31 +24,50 @@ class Config:
         self.__calculate_totals()
 
     def __load_config(self) -> None:
-        try:
-            self.config = FileManager.load_yaml(self.config_file_path)
-        except FileNotFoundError:
+        self.config = FileManager.load_yaml(self.config_file_path)
+        if self.config is None:
             raise ConfigNotFoundError(path=self.config_file_path)
 
     def parse_config(self) -> None:
-        self.offset = ConfigAPI.get_offset(self.config["offset"])
-        self.release_date = ConfigAPI.get_years(self.config["release_date"])
-        self.titles = ConfigAPI.get_titles(self.config["titles"])
-        self.progress_bar = ConfigAPI.validate_progress_bar(
-            self.config["progress_bar"]
+        """Parses the configuration YAML file
+        
+        Your own config-parser should be structured as follows:
+            self.{NAME} = self.config[{CONFIGURATION_PARAMETER_NAME}]
+            
+        Example:
+            self.offset = self.config["offset"]
+            
+        NOTE: if you want to validate the parameter value, use the validate() function
+        """
+        self.offset = validate(
+            self.config["offset"],
+            "integer",
+            default_value=1,
+            value_range=(2, 250),
+            exception_message=INVALID_OFFSET_MESSAGE,
+        )
+        self.release_date = validate(
+            self.config["release_date"],
+            "integer_list",
+            value_range=(0, LAUNCH_TIME.year),
+            exception_message=INVALID_YEARS_MESSAGE,
+        )
+        self.titles = validate(
+            self.config["titles"],
+            "any_list_wn",
+            exception_message=INVALID_TITLES_MESSAGE,
+        )
+        self.progress_bar = validate(
+            self.config["progress_bar"],
+            "boolean",
+            exception_message=INVALID_PROGRESS_BAR_MESSAGE,
         )
 
     def __calculate_totals(self) -> None:
-        self.total_months = (
-            LAUNCH_TIME.month
-            if self.release_date == [LAUNCH_TIME.year]
-            else 12
-        )
-        self.total_days = (
-            sum(
-                get_monthrange(month)
-                for month in range(1, self.total_months + 1)
-            )
-            if self.total_months != 12
-            else 366
-        )
+        self.total_months = (LAUNCH_TIME.month if self.release_date
+                             == [LAUNCH_TIME.year] else 12)
+        self.total_days = (sum(
+            get_monthrange(month)
+            for month in range(1, self.total_months +
+                               1)) if self.total_months != 12 else 366)
         self.total_urls = len(self.titles) * self.offset * self.total_days

@@ -4,7 +4,8 @@
 /build
 /dist
 *egg*
+*yapf*
 
 /*out*
 /*lp*
-/tests
+*test*
