@@ -23,7 +23,8 @@ class InvalidValidationTypeError(ValidatorException):
 
     @property
     def message(self) -> str:
-        return INVALID_VALIDATION_TYPE_MESSAGE.format(type=self.validation_type)
+        return INVALID_VALIDATION_TYPE_MESSAGE.format(
+            type=self.validation_type)
 
 
 @dataclass(frozen=True, eq=False)

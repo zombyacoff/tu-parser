@@ -39,7 +39,7 @@ class TelegraphParser(ABC):
 
     @abstractmethod
     async def parse(self, url: str, soup: BeautifulSoup) -> None:
-        """Entry point for child classes"""
+        ...
 
     @call_counter
     def __get_progress_bar(self) -> None:
@@ -126,8 +126,8 @@ def run_parser(parser_class: TelegraphParser,
     """
     try:
         config = config_class(config_path)
-        parser = (parser_class(config) if parser_args is None else parser_class(
-            config, *parser_args))
+        parser = (parser_class(config) if parser_args is None else
+                  parser_class(config, *parser_args))
         asyncio.run(parser.main())
     except ApplicationException as exception:
         exception.get_error_message(exception)

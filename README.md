@@ -1,5 +1,5 @@
 # Telegraph Universal Parser
-A pip-module that facilitates the creation of Telegra.ph parsing scripts
+A pip-module that facilitates the creation of [Telegraph](https://telegra.ph) parsing scripts
 
 ## Examples
 Examples of using our module:

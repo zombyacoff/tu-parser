@@ -5,7 +5,13 @@ from typing import Callable
 
 from termcolor import colored
 
-__all__ = ["ConsoleColor", "compile_regex", "get_monthrange", "get_time_now"]
+__all__ = [
+    "ConsoleColor",
+    "compile_regex",
+    "get_monthrange",
+    "get_time_now",
+    "call_counter",
+]
 
 
 def get_time_now() -> datetime:
@@ -22,7 +28,11 @@ def compile_regex(regex: str) -> re.Pattern:
 
 
 def call_counter(func: Callable) -> Callable:
-    """Decorator that counts the number of times a function is called"""
+    """Decorator that counts the number of times a function is called
+    
+    Example:
+        {FUNCTION NAME}.calls
+    """
 
     def wrapper(*args, **kwargs) -> int:
         wrapper.calls += 1

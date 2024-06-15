@@ -62,12 +62,12 @@ class Config:
             "boolean",
             exception_message=INVALID_PROGRESS_BAR_MESSAGE,
         )
-        # print(self.offset, self.release_date, self.titles, self.progress_bar)
 
     def __calculate_totals(self) -> None:
-        self.total_months = (LAUNCH_TIME.month
-                             if self.release_date == [LAUNCH_TIME.year] else 12)
+        self.total_months = (LAUNCH_TIME.month if self.release_date
+                             == [LAUNCH_TIME.year] else 12)
         self.total_days = (sum(
-            get_monthrange(month) for month in range(1, self.total_months + 1))
-                           if self.total_months != 12 else 366)
+            get_monthrange(month)
+            for month in range(1, self.total_months +
+                               1)) if self.total_months != 12 else 366)
         self.total_urls = len(self.titles) * self.offset * self.total_days
