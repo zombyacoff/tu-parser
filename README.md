@@ -7,7 +7,7 @@ pip install tuparser
 ```
 
 ## Example Usage
-Here is a small demonstration of how you can create your parser and parse anything you want.  
+Here is a small demonstration of how you can create your parser and parse anything you want.
 Let's have a look at simple parser that searches particular word in Telegraph articles:
 ```py
 # First, you need to import the necessary modules from tuparser
@@ -84,6 +84,7 @@ titles:
 # The parser will look for this word in each article.
 word: around
 ```
+This word finder you'll find in [example](example) folder
 
 ## Contributing
 To contribute, fork the repository, create a new branch for your changes, and submit a pull request.
