@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from ..utils import ConsoleColor
 from .base import ApplicationException
-from .messages import ERROR_TITLE, FILE_NOT_FOUND_MESSAGE
 
 
 class ConfigException(ApplicationException):
@@ -11,8 +10,7 @@ class ConfigException(ApplicationException):
     @staticmethod
     def get_error_message(exception: "ConfigException") -> str:
         print(
-            ConsoleColor.paint_error(
-                ERROR_TITLE.format(title="CONFIGURATION FILE")),
+            ConsoleColor.paint_error("CONFIGURATION FILE ERROR"),
             ConsoleColor.paint_info(exception.message),
             sep="\n",
         )
@@ -24,7 +22,7 @@ class ConfigNotFoundError(ConfigException):
 
     @property
     def message(self) -> str:
-        return FILE_NOT_FOUND_MESSAGE.format(path=self.path)
+        return f"The {self.path} file is missing"
 
 
 @dataclass(frozen=True, eq=False)

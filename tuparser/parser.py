@@ -22,7 +22,6 @@ TIME_ELAPSED_TEXT = "Time elapsed: {time}"
 
 
 class TelegraphParser(ABC):
-
     def __init__(self, config: Config) -> None:
         self.config = config
 
@@ -38,8 +37,7 @@ class TelegraphParser(ABC):
         await self.parse(url, soup)
 
     @abstractmethod
-    async def parse(self, url: str, soup: BeautifulSoup) -> None:
-        ...
+    async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
 
     @call_counter
     def __get_progress_bar(self) -> None:
@@ -52,18 +50,25 @@ class TelegraphParser(ABC):
             return True
 
         time_element = soup.select_one("time")
-        release_date = (int(time_element.get_text("\n", strip=True)[-4:])
-                        if time_element else LAUNCH_TIME.year)
+        release_date = (
+            int(time_element.get_text("\n", strip=True)[-4:])
+            if time_element
+            else LAUNCH_TIME.year
+        )
         return release_date in self.config.release_date
 
     def get_complete_message(self) -> None:
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
-            ConsoleColor.paint_success(SUCCESS_COMPLETE_TITLE) + " " *
-            (ProgressBar.get_length(self.config.total_urls) -
-             len(SUCCESS_COMPLETE_TITLE)),
+            ConsoleColor.paint_success(SUCCESS_COMPLETE_TITLE)
+            + " "
+            * (
+                ProgressBar.get_length(self.config.total_urls)
+                - len(SUCCESS_COMPLETE_TITLE)
+            ),
             ConsoleColor.paint_info(
-                TIME_ELAPSED_TEXT.format(time=elapsed_time)),
+                TIME_ELAPSED_TEXT.format(time=elapsed_time)
+            ),
             sep="\n",
         )
 
@@ -107,27 +112,32 @@ class TelegraphParser(ABC):
                 break
 
 
-def run_parser(parser_class: TelegraphParser,
-               *,
-               config_class: Config = Config,
-               parser_args: list[any] | None = None,
-               config_path: str = "config") -> None:
+def run_parser(
+    parser_class: TelegraphParser,
+    *,
+    config_class: Config = Config,
+    parser_args: list[any] | None = None,
+    config_path: str = "config",
+) -> None:
     """Starts the parser
-    
+
     Required arguments:
-    :param parser_class: (TelegraphParser) the parser class, 
+    :param parser_class: (TelegraphParser) the parser class,
     which must inherit from TelegraphParser
-    
+
     Optional configuration arguments:
-    :param config_class: (Config) custom configuration class, 
+    :param config_class: (Config) custom configuration class,
     which must inherit from Config. Default value: Config class
     :param parser_args: (List) arguments passed to the constructor of the parser class
     :param config_path: (String) path to the configuration file. Default value: 'config'
     """
     try:
         config = config_class(config_path)
-        parser = (parser_class(config) if parser_args is None else
-                  parser_class(config, *parser_args))
+        parser = (
+            parser_class(config)
+            if parser_args is None
+            else parser_class(config, *parser_args)
+        )
         asyncio.run(parser.main())
     except ApplicationException as exception:
         exception.get_error_message(exception)

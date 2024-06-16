@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from ..utils import ConsoleColor
 from .base import ApplicationException
-from .messages import ERROR_TITLE, INVALID_VALIDATION_TYPE_MESSAGE
 
 
 class ValidatorException(ApplicationException):
@@ -11,7 +10,7 @@ class ValidatorException(ApplicationException):
     @staticmethod
     def get_error_message(exception: "ValidatorException") -> str:
         print(
-            ConsoleColor.paint_error(ERROR_TITLE.format(title="VALIDATION")),
+            ConsoleColor.paint_error("VALIDATION ERROR"),
             ConsoleColor.paint_info(exception.message),
             sep="\n",
         )
@@ -23,15 +22,14 @@ class InvalidValidationTypeError(ValidatorException):
 
     @property
     def message(self) -> str:
-        return INVALID_VALIDATION_TYPE_MESSAGE.format(
-            type=self.validation_type)
+        return f"Invalid validation type: {self.validation_type}"
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidValueError(ValidatorException):
+class InvalidValidationValueError(ValidatorException):
     value: str
     error_message: str
 
     @property
     def message(self) -> str:
-        return self.error_message.format(value=self.value)
+        return self.error_message.format(self.value)

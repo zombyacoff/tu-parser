@@ -18,13 +18,10 @@ class YAMLOutputFile:
     @call_counter
     def write_data(self, *data: any) -> None:
         """Writes data to the dictionary 'data'
-        
-        :param data: data to write. If multiple values need to be written,
-        they should be passed as a tuple.
-        
+
         Example:
             write_data('Alexey', 'Yaroslav', 'TUParser')
-        
+
         NOTE: the dictionary should have at least as many keys as the values passed.
         """
         for i, key in enumerate(self.data):

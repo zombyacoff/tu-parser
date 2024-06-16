@@ -29,9 +29,17 @@ def compile_regex(regex: str) -> re.Pattern:
 
 def call_counter(func: Callable) -> Callable:
     """Decorator that counts the number of times a function is called
-    
+
+    Usage:
+        {FUNCTION_NAME}.calls
+
     Example:
-        {FUNCTION NAME}.calls
+        @call_counter
+        def example_func():
+            print(example_func.calls)
+
+        example_func()  # 1
+        example_func()  # 2
     """
 
     def wrapper(*args, **kwargs) -> int:
@@ -43,7 +51,6 @@ def call_counter(func: Callable) -> Callable:
 
 
 class ConsoleColor:
-
     @staticmethod
     def paint_success(text: str) -> str:
         """Paints the given text in bold green"""

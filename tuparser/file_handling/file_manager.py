@@ -6,7 +6,6 @@ YAML_EXTENSIONS = (".yml", ".yaml")
 
 
 class FileManager:
-
     @staticmethod
     def create_folder(folder_path: str) -> None:
         os.makedirs(folder_path, exist_ok=True)
