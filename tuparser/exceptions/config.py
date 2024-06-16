@@ -22,7 +22,7 @@ class ConfigNotFoundError(ConfigException):
 
     @property
     def message(self) -> str:
-        return f"The {self.path} file is missing"
+        return f"The {self.path} YAML configuration file is missing"
 
 
 @dataclass(frozen=True, eq=False)
