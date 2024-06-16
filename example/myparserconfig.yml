@@ -1,0 +1,11 @@
+offset: false
+
+release_date: false
+
+progress_bar: true
+
+titles:
+- dog
+- cat
+
+word: around

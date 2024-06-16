@@ -51,10 +51,10 @@ output_file = YAMLOutputFile({"url": {}})
 
 # Run the parser with the specified configuration
 run_parser(
-    MyParser,                    # Your parser class 
-    parser_args=[output_file],   # A list containing the class arguments  
-    config_class=MyParserConfig, # Your config class 
-    config_path="myparserconfig" # Path to your config file without extension
+    MyParser,                     # Your parser class 
+    parser_args=[output_file],    # A list containing the class arguments  
+    config_class=MyParserConfig,  # Your config class 
+    config_path="myparserconfig", # Path to your config file without extension
 )
 ```
 
