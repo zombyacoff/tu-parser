@@ -15,5 +15,4 @@ progress_bar: true
 # Titles of the articles to search for.
 # Add as many titles as you want; the parser will look for articles with these titles.
 titles:
-- dog
-- cat
+-

@@ -20,7 +20,6 @@ class MyParser(TelegraphParser):
 
 
 output_file = YAMLOutputFile({"url": {}})
-
 run_parser(
     MyParser,
     parser_args=[output_file],

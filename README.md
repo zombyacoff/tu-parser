@@ -82,9 +82,11 @@ titles:
 
 # The word to search for within the articles' text, as declared in MyParserConfig.
 # The parser will look for this word in each article.
-word: around
+word: animal
 ```
-This word finder you'll find in [example](example) folder
+This word finder you'll find in [example](example) folder.
+
+You can also take a look at the [basic configuration file](config.yml), which should be present in every project. Of course, you are free to change its name and path, specifying it as an argument to the `run_parser` function, as well as add new parameters to the config, as shown above.
 
 ## Contributing
 To contribute, fork the repository, create a new branch for your changes, and submit a pull request.
