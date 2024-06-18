@@ -12,8 +12,6 @@ from .extensions import ProgressBar
 from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, call_counter, get_monthrange, get_time_now
 
-__all__ = ["TelegraphParser", "run_parser"]
-
 SEMAPHORE_MAX_LIMIT = 150
 HTTP_OK_STATUS = 200
 PARSING_START_MESSAGE = """Parsing has started...
