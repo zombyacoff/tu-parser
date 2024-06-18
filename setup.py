@@ -21,7 +21,6 @@ setup(
     author=tuparser.__author__,
     author_email=tuparser.__email__,
     url=tuparser.__git_url__,
-    license="GPL-3.0",
     description=
     "A module that facilitates the creation of Telegraph parsing scripts",
     # long_description=get_description(),
