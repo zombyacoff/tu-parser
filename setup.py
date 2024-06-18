@@ -34,7 +34,7 @@ setup(
     install_requires=get_requirements(),
     python_requires=">=3.12",
     classifiers=[
-        "License :: OSI Approved :: GNU GENERAL PUBLIC LICENSE V3 (GPLV3)",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.12",
     ],
