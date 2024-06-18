@@ -8,7 +8,7 @@ class ConfigException(ApplicationException):
     """General exception for configuration file errors"""
 
     @staticmethod
-    def get_error_message(exception: "ConfigException") -> str:
+    def get_error_message(exception: "ConfigException") -> None:
         print(
             ConsoleColor.paint_error("CONFIGURATION FILE ERROR"),
             ConsoleColor.paint_info(exception.message),

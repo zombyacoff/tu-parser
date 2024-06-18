@@ -16,8 +16,8 @@ class ProgressBar:
         )
         print(
             bar,
-            TOTAL_PROGRESS.format(current, total),
-            PERCENT_PROGRESS.format(percent),
+            TOTAL_PROGRESS.format(current=current, total=total),
+            PERCENT_PROGRESS.format(percent=percent),
             end="\r",
         )
 

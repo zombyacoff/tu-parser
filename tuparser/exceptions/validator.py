@@ -8,7 +8,7 @@ class ValidatorException(ApplicationException):
     """General exception for validation errors"""
 
     @staticmethod
-    def get_error_message(exception: "ValidatorException") -> str:
+    def get_error_message(exception: "ValidatorException") -> None:
         print(
             ConsoleColor.paint_error("VALIDATION ERROR"),
             ConsoleColor.paint_info(exception.message),
@@ -32,4 +32,4 @@ class InvalidValidationValueError(ValidatorException):
 
     @property
     def message(self) -> str:
-        return self.error_message.format(self.value)
+        return self.error_message.format(value=self.value)
