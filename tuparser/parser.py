@@ -15,6 +15,7 @@ from .utils import ConsoleColor, call_counter, get_monthrange, get_time_now
 __all__ = ["TelegraphParser", "run_parser"]
 
 SEMAPHORE_MAX_LIMIT = 150
+HTTP_OK_STATUS = 200
 PARSING_START_MESSAGE = """Parsing has started...
 Do not turn off the program until the process is completed!\n"""
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
@@ -27,7 +28,7 @@ class TelegraphParser(ABC):
 
     async def __process_url(self, url: str) -> None:
         async with self.session.get(url) as page:
-            if page.status != 200:
+            if page.status != HTTP_OK_STATUS:
                 return
             soup = BeautifulSoup(await page.text(), "html.parser")
 
