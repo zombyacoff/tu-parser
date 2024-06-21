@@ -1,5 +1,5 @@
 # Telegraph Universal Parser
-**Telegraph Universal Parser (tu-parser)** is a flexible Python module designed for creating custom parsers for the Telegraph website. It offers easily configurable and extendable functionality to scrape and analyze article content. This module is ideal for developers looking to automate the extraction of data from Telegraph articles.
+**Telegraph Universal Parser (tu-parser)** is a flexible Python module designed for creating custom parsers for the Telegraph website. It offers easily configurable and extendable functionality to scrape and analyze article content. This module can be useful for developers looking to automate the extraction of data from Telegraph articles.
 
 ### Installation
 ```batch
@@ -86,6 +86,8 @@ word: animal
 This word finder you'll find in [example](example) folder.
 
 You can also take a look at the [basic configuration file](config.yml), which should be present in every project. Of course, you are free to change its name and path, specifying it as an argument to the `run_parser` function, as well as add new parameters to the config, as shown above.
+
+And finally, **you can explore other examples of how to use this module — [LP Parser](https://github.com/zombyacoff/telegraph-lp-parser), [Media Parser](https://github.com/Fru1tApple/telegraph-media-parser), and [Links Parser](https://github.com/lazerofmagma/links-parser).**
 
 ## Contributing
 To contribute, fork the repository, create a new branch for your changes, and submit a pull request.
