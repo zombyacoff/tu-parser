@@ -4,7 +4,7 @@ from tuparser import Config, TelegraphParser, YAMLOutputFile, run_parser
 class MyParserConfig(Config):
     def parse_config(self):
         super().parse_config()
-        self.word = self.config["word"]
+        self.word = self.config.get("word")
 
 
 class MyParser(TelegraphParser):

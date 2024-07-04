@@ -34,30 +34,30 @@ class Config:
             self.{NAME} = self.config[{CONFIGURATION_PARAMETER_NAME}]
 
         Example:
-            self.offset = self.config["offset"]
+            self.offset = self.config.get("offset")
 
         NOTE: if you want to validate the parameter value, use the validate() function
         """
         self.offset = validate(
-            self.config["offset"],
+            self.config.get("offset"),
             "integer",
             default_value=1,
             value_range=(2, 250),
             exception_message=INVALID_OFFSET_MESSAGE,
         )
         self.release_date = validate(
-            self.config["release_date"],
+            self.config.get("release_date"),
             "integer_list",
             value_range=(0, LAUNCH_TIME.year),
             exception_message=INVALID_YEARS_MESSAGE,
         )
         self.titles = validate(
-            self.config["titles"],
+            self.config.get("titles"),
             "any_list_wn",
             exception_message=INVALID_TITLES_MESSAGE,
         )
         self.progress_bar = validate(
-            self.config["progress_bar"],
+            self.config.get("progress_bar"),
             "boolean",
             exception_message=INVALID_PROGRESS_BAR_MESSAGE,
         )

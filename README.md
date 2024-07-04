@@ -22,7 +22,7 @@ class MyParserConfig(Config):
         super().parse_config()
         # self.config is a dictionary 
         # containing settings from the configuration file  
-        self.word = self.config["word"]
+        self.word = self.config.get("word")
 
 # Next, create a new class that inherits from TelegraphParser
 class MyParser(TelegraphParser):
