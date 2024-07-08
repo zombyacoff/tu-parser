@@ -1,13 +1,13 @@
-from tuparser import Config, TelegraphParser, YAMLOutputFile, run_parser
+from tuparser import TelegraphParser, TelegraphParserConfig, YAMLOutputFile, run_parser
 
 
-class MyParserConfig(Config):
+class WordFinderConfig(TelegraphParserConfig):
     def parse_config(self):
         super().parse_config()
         self.word = self.config.get("word")
 
 
-class MyParser(TelegraphParser):
+class WordFinder(TelegraphParser):
     def __init__(self, config, output_file):
         super().__init__(config)
         self.output_file = output_file
@@ -21,8 +21,8 @@ class MyParser(TelegraphParser):
 
 output_file = YAMLOutputFile({"url": {}})
 run_parser(
-    MyParser,
+    WordFinder,
     parser_args=[output_file],
-    config_class=MyParserConfig,
-    config_path="myparserconfig",
+    config_class=WordFinderConfig,
+    config_path="word_finder_config",
 )

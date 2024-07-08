@@ -1,9 +1,7 @@
 from .exceptions import InvalidValidationTypeError, InvalidValidationValueError
 
 
-def check_condition(
-    condition: bool, value: any, exception_message: str
-) -> None:
+def check_condition(condition: bool, value: any, exception_message: str) -> None:
     if not condition:
         raise InvalidValidationValueError(value, exception_message)
 
@@ -21,9 +19,7 @@ def boolean(value: any, exception_message: str) -> bool:
     return value
 
 
-def integer(
-    value: int, exception_message: str, value_range: tuple[int, int] | None
-) -> int:
+def integer(value: int, exception_message: str, value_range: tuple[int, int] | None) -> int:
     # Checks if the value is of type int,
     # and if the range of acceptable values is specified,
     # verifies that the value is within the range
@@ -45,10 +41,7 @@ def integer_list(
     # verifies that each value in the list is within the range
     check_condition(
         isinstance(values, list)
-        and all(
-            isinstance(value, int) and check_range(value, value_range)
-            for value in values
-        ),
+        and all(isinstance(value, int) and check_range(value, value_range) for value in values),
         values,
         exception_message,
     )
@@ -60,8 +53,7 @@ def any_list_wn(values: any, exception_message: str) -> list[any]:
     # Checks if the value is of type list,
     # and ensures that none of the values in the list are None
     check_condition(
-        isinstance(values, list)
-        and all(value is not None for value in values),
+        isinstance(values, list) and all(value is not None for value in values),
         values,
         exception_message,
     )
@@ -120,6 +112,4 @@ def validate(
             return any_list_wn(value, exception_message)
 
         case _:
-            raise InvalidValidationTypeError(
-                validation_type=type_of_validation
-            )
+            raise InvalidValidationTypeError(validation_type=type_of_validation)

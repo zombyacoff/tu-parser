@@ -5,7 +5,7 @@ from typing import Generator
 import aiohttp
 from bs4 import BeautifulSoup
 
-from .config import Config
+from .config import TelegraphParserConfig
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
 from .exceptions import ApplicationException
 from .extensions import ProgressBar
@@ -21,7 +21,7 @@ TIME_ELAPSED_TEXT = "Time elapsed: {time}"
 
 
 class TelegraphParser(ABC):
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: TelegraphParserConfig) -> None:
         self.config = config
 
     async def __process_url(self, url: str) -> None:
@@ -50,9 +50,7 @@ class TelegraphParser(ABC):
 
         time_element = soup.select_one("time")
         release_date = (
-            int(time_element.get_text("\n", strip=True)[-4:])
-            if time_element
-            else LAUNCH_TIME.year
+            int(time_element.get_text("\n", strip=True)[-4:]) if time_element else LAUNCH_TIME.year
         )
         return release_date in self.config.release_date
 
@@ -60,14 +58,8 @@ class TelegraphParser(ABC):
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
             ConsoleColor.paint_success(SUCCESS_COMPLETE_TITLE)
-            + " "
-            * (
-                ProgressBar.get_length(self.config.total_urls)
-                - len(SUCCESS_COMPLETE_TITLE)
-            ),
-            ConsoleColor.paint_info(
-                TIME_ELAPSED_TEXT.format(time=elapsed_time)
-            ),
+            + " " * (ProgressBar.get_length(self.config.total_urls) - len(SUCCESS_COMPLETE_TITLE)),
+            ConsoleColor.paint_info(TIME_ELAPSED_TEXT.format(time=elapsed_time)),
             sep="\n",
         )
 
@@ -93,17 +85,14 @@ class TelegraphParser(ABC):
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
         urls_generator = self.__generate_urls()
         async with aiohttp.ClientSession() as self.session:
-            processes = [
-                self.__semaphore_process(url, semaphore)
-                for url in urls_generator
-            ]
+            processes = [self.__semaphore_process(url, semaphore) for url in urls_generator]
             for process in asyncio.as_completed(processes):
-                self.__get_progress_bar()
                 await process
+                self.__get_progress_bar()
 
         self.get_complete_message()
 
-        # complete 'output file' if child class
+        # Complete 'output file' if child class
         # has an attribute whose type is YAMLOutputFile
         for _, attr_value in vars(self).items():
             if isinstance(attr_value, YAMLOutputFile):
@@ -114,7 +103,7 @@ class TelegraphParser(ABC):
 def run_parser(
     parser_class: TelegraphParser,
     *,
-    config_class: Config = Config,
+    config_class: TelegraphParserConfig = TelegraphParserConfig,
     parser_args: list[any] | None = None,
     config_path: str = "config",
 ) -> None:
@@ -125,17 +114,14 @@ def run_parser(
     which must inherit from TelegraphParser
 
     Optional configuration arguments:
-    :param config_class: (Config) custom configuration class,
-    which must inherit from Config. Default value: Config class
+    :param config_class: (Config) custom configuration class, which must inherit from Config
     :param parser_args: (List) arguments passed to the constructor of the parser class
-    :param config_path: (String) path to the configuration file. Default value: 'config'
+    :param config_path: (String) path to the YAML configuration file without extension. Default value: 'config'
     """
     try:
         config = config_class(config_path)
         parser = (
-            parser_class(config)
-            if parser_args is None
-            else parser_class(config, *parser_args)
+            parser_class(config) if parser_args is None else parser_class(config, *parser_args)
         )
         asyncio.run(parser.main())
     except ApplicationException as exception:

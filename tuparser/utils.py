@@ -1,4 +1,3 @@
-import re
 from calendar import monthrange
 from datetime import datetime
 from typing import Callable
@@ -13,10 +12,6 @@ def get_time_now() -> datetime:
 def get_monthrange(month: int) -> int:
     """Returns the number of days in a given month"""
     return monthrange(2020, month)[1]
-
-
-def compile_regex(regex: str) -> re.Pattern:
-    return re.compile(regex)
 
 
 def call_counter(func: Callable) -> Callable:

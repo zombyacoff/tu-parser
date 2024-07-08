@@ -11,11 +11,16 @@ Here is a small demonstration of how you can create your parser and parse anythi
 Let's have a look at simple parser that searches particular word in Telegraph articles:
 ```py
 # First, you need to import the necessary modules from tuparser
-from tuparser import Config, TelegraphParser, YAMLOutputFile, run_parser
+from tuparser import (
+    TelegraphParserConfig,
+    TelegraphParser,
+    YAMLOutputFile,
+    run_parser,
+)
 
 # If you want to customize settings,
 # create a new class that inherits from Config
-class MyParserConfig(Config):
+class WordFinderConfig(TelegraphParserConfig):
     def parse_config(self):
         # Initialize parameters 
         # from the default configuration file
@@ -25,7 +30,7 @@ class MyParserConfig(Config):
         self.word = self.config.get("word")
 
 # Next, create a new class that inherits from TelegraphParser
-class MyParser(TelegraphParser):
+class WordFinder(TelegraphParser):
     # Add additional arguments to the main constructor
     # 'output_file' is an instance of the YAMLOutputFile class
     # which simplifies the creation of the output file  
@@ -47,17 +52,16 @@ class MyParser(TelegraphParser):
 # Create an instance of YAMLOutputFile
 # You must provide a dictionary with the initial structure
 output_file = YAMLOutputFile({"url": {}})
-
 # Run the parser with the specified configuration
 run_parser(
-    MyParser,                     # Your parser class 
-    parser_args=[output_file],    # A list containing the class arguments  
-    config_class=MyParserConfig,  # Your config class 
-    config_path="myparserconfig", # Path to your config file without extension
+    WordFinder,                       # Your parser class 
+    parser_args=[output_file],        # A list containing the class arguments  
+    config_class=WordFinderConfig,    # Your config class 
+    config_path="word_finder_config", # Path to your config file without extension
 )
 ```
 
-#### Here is an example of the `myparserconfig.yml` configuration file:  
+#### Here is an example of the `word_finder_config.yml` configuration file:  
 ```yaml
 # Specifies how many articles the parser will examine per day.
 # Provide an integer between 2 and 250.

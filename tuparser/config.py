@@ -4,15 +4,15 @@ from .file_handling import FileManager
 from .utils import get_monthrange
 from .validator import validate
 
-INVALID_OFFSET_MESSAGE = "Invalid offset value: {value}\n(value must be an integer greater than 2 and less than 250)"
+INVALID_OFFSET_MESSAGE = (
+    "Invalid offset value: {value}\n(value must be an integer greater than 2 and less than 250)"
+)
 INVALID_YEARS_MESSAGE = "Invalid years in release date: {value}"
 INVALID_TITLES_MESSAGE = "Invalid titles: {value}"
-INVALID_PROGRESS_BAR_MESSAGE = (
-    "Invalid progress bar value: {value}\n(value must be a boolean)"
-)
+INVALID_PROGRESS_BAR_MESSAGE = "Invalid progress bar value: {value}\n(value must be a boolean)"
 
 
-class Config:
+class TelegraphParserConfig:
     def __init__(self, config_file_path: str) -> None:
         self.config_file_path = config_file_path
         self.__load_config()
@@ -31,7 +31,7 @@ class Config:
         """Parses the configuration YAML file
 
         Your own config-parser should be structured as follows:
-            self.{NAME} = self.config[{CONFIGURATION_PARAMETER_NAME}]
+            self.{NAME} = self.config.get("{CONFIGURATION_PARAMETER_NAME}")
 
         Example:
             self.offset = self.config.get("offset")
@@ -63,16 +63,9 @@ class Config:
         )
 
     def __calculate_totals(self) -> None:
-        self.total_months = (
-            LAUNCH_TIME.month
-            if self.release_date == [LAUNCH_TIME.year]
-            else 12
-        )
+        self.total_months = LAUNCH_TIME.month if self.release_date == [LAUNCH_TIME.year] else 12
         self.total_days = (
-            sum(
-                get_monthrange(month)
-                for month in range(1, self.total_months + 1)
-            )
+            sum(get_monthrange(month) for month in range(1, self.total_months + 1))
             if self.total_months != 12
             else 366
         )
