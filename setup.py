@@ -17,7 +17,7 @@ setup(
     author_email=tuparser.__email__,
     url=tuparser.__git_url__,
     description=
-    "A module that facilitates the creation of Telegraph parsing scripts",
+    "A flexible module for building custom parsers for the Telegraph website",
     long_description=dedent(f"""\
         # Telegraph Universal Parser
         **Telegraph Universal Parser (tu-parser)** is a flexible module designed for creating custom parsers for the [Telegraph]({tuparser.TELEGRAPH_URL}) website.
