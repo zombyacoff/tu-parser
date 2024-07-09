@@ -63,7 +63,7 @@ def any_list_wn(values: any, exception_message: str) -> list[any]:
 
 def validate(
     value: any,
-    type_of_validation: str,
+    validation_type: str,
     *,
     default_value: any = None,
     value_range: tuple[int, int] | None = None,
@@ -73,7 +73,7 @@ def validate(
 
     Required arguments:
     :param value: (Any) the value to be validated
-    :param type_of_validation: (String) the type of validation
+    :param validation_type: (String) the type of validation
         "boolean": checks if the value is of type bool
         "integer": checks if the value is of type int, and if the range of
         acceptable values is specified, verifies that the value is within the range
@@ -95,10 +95,10 @@ def validate(
     If the validation is successful, returns the value that was initially
     passed to the function.
     """
-    if type_of_validation != "boolean" and value is False:
+    if validation_type != "boolean" and value is False:
         return default_value
 
-    match type_of_validation:
+    match validation_type:
         case "boolean":
             return boolean(value, exception_message)
 
@@ -112,4 +112,4 @@ def validate(
             return any_list_wn(value, exception_message)
 
         case _:
-            raise InvalidValidationTypeError(validation_type=type_of_validation)
+            raise InvalidValidationTypeError(validation_type=validation_type)

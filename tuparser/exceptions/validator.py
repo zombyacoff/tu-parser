@@ -1,19 +1,9 @@
 from dataclasses import dataclass
 
-from ..utils import ConsoleColor
 from .base import ApplicationException
 
 
-class ValidatorException(ApplicationException):
-    """General exception for validation errors"""
-
-    @staticmethod
-    def get_error_message(exception: "ValidatorException") -> None:
-        print(
-            ConsoleColor.paint_error("VALIDATION ERROR"),
-            ConsoleColor.paint_info(exception.message),
-            sep="\n",
-        )
+class ValidatorException(ApplicationException): ...
 
 
 @dataclass(frozen=True, eq=False)
