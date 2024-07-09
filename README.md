@@ -12,14 +12,14 @@ Let's have a look at simple parser that searches particular word in Telegraph ar
 ```py
 # First, you need to import the necessary modules from tuparser
 from tuparser import (
-    TelegraphParserConfig,
     TelegraphParser,
+    TelegraphParserConfig,
     YAMLOutputFile,
     run_parser,
 )
 
 # If you want to customize settings,
-# create a new class that inherits from Config
+# create a new class that inherits from TelegraphParserConfig
 class WordFinderConfig(TelegraphParserConfig):
     def parse_config(self):
         # Initialize parameters 

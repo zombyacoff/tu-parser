@@ -1,11 +1,8 @@
+from textwrap import dedent
+
 from setuptools import find_packages, setup
 
 import tuparser
-
-
-def get_description() -> str:
-    with open("README.md", "r") as file:
-        return file.read()
 
 
 def get_requirements(file_name: str = "requirements.txt") -> list[str]:
@@ -21,7 +18,10 @@ setup(
     url=tuparser.__git_url__,
     description=
     "A module that facilitates the creation of Telegraph parsing scripts",
-    long_description=get_description(),
+    long_description=dedent(f"""\
+        # Telegraph Universal Parser
+        **Telegraph Universal Parser (tu-parser)** is a flexible module designed for creating custom parsers for the [Telegraph]({tuparser.TELEGRAPH_URL}) website.
+        """),
     long_description_content_type="text/markdown",
     packages=find_packages(),
     install_requires=get_requirements(),
