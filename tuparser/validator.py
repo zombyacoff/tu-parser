@@ -87,7 +87,7 @@ def validate(
     :param default_value: (Any) the default value. The function returns this value if it is False,
     but only if the validation type != "boolean"
     :param value_range: (Tuple[int, int]) the range of acceptable values.
-    Should be set if the validation type = "integer"
+    Can be set if the validation type = "integer"/"integer_list"
     :param exception_message: (String) the error message if the value fails validation.
     Default value: "Invalid value: {value}"
 
