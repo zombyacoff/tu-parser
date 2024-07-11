@@ -1,11 +1,11 @@
 offset: false
 
-release_date: false
-
 progress_bar: true
 
+release_date: false
+
 titles:
-- dog
 - cat
+- dog
 
 word: animal

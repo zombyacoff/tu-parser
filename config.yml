@@ -3,14 +3,14 @@
 # Set to false to disable this feature.
 offset: false
 
+# Boolean value to turn the progress bar on or off.
+# Set to true to show the progress bar, false to hide it.
+progress_bar: true
+
 # A list of years in which the articles were written.
 # If you only want articles from specific years, list them here.
 # Set to false to disable this filter.
 release_date: false
-
-# Boolean value to turn the progress bar on or off.
-# Set to true to show the progress bar, false to hide it.
-progress_bar: true
 
 # Titles of the articles to search for.
 # Add as many titles as you want; the parser will look for articles with these titles.

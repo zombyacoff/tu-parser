@@ -31,12 +31,12 @@ class TelegraphParserConfig:
         """Parses the configuration YAML file
 
         Your own config-parser should be structured as follows:
-            self.{NAME} = self.config.get("{CONFIGURATION_PARAMETER_NAME}")
+            self.{VARIABLE_NAME} = self.config.get("{CONFIGURATION_PARAMETER_NAME}")
 
         Example:
             self.offset = self.config.get("offset")
 
-        NOTE: if you want to validate the parameter value, use the validate() function
+        NOTE: if you want to validate the parameter value, use the validate function
         """
         self.offset = validate(
             self.config.get("offset"),
