@@ -5,15 +5,16 @@ from typing import Generator
 import aiohttp
 from bs4 import BeautifulSoup
 
-from .config import TelegraphParserConfig
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
 from .exceptions import ApplicationException
 from .extensions import ProgressBar
 from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, call_counter, get_monthrange, get_time_now
+from .validator import validate
 
 SEMAPHORE_MAX_LIMIT = 150
 HTTP_OK_STATUS = 200
+
 PARSING_START_MESSAGE = """Parsing has started...
 Do not turn off the program until the process is completed!\n"""
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
@@ -21,8 +22,16 @@ TIME_ELAPSED_TEXT = "Time elapsed: {time}"
 
 
 class TelegraphParser(ABC):
-    def __init__(self, config: TelegraphParserConfig) -> None:
-        self.config = config
+    def __init__(self, required_args: tuple[any]) -> None:
+        self.titles, self.offset, self.progress_bar, self.release_dates = required_args
+
+        self.total_months = LAUNCH_TIME.month if self.release_dates == [LAUNCH_TIME.year] else 12
+        self.total_days = (
+            sum(get_monthrange(month) for month in range(1, self.total_months + 1))
+            if self.total_months != 12
+            else 366
+        )
+        self.total_urls = len(self.titles) * self.offset * self.total_days
 
     async def __process_url(self, url: str) -> None:
         async with self.session.get(url) as page:
@@ -40,34 +49,34 @@ class TelegraphParser(ABC):
 
     @call_counter
     def __get_progress_bar(self) -> None:
-        if not self.config.progress_bar:
+        if not self.progress_bar:
             return
-        ProgressBar.show(self.__get_progress_bar.calls, self.config.total_urls)
+        ProgressBar.show(self.__get_progress_bar.calls, self.total_urls)
 
     def __check_release_date(self, soup: BeautifulSoup) -> bool:
-        if self.config.release_date is None:
+        if self.release_dates is None:
             return True
 
         time_element = soup.select_one("time")
         release_date = (
             int(time_element.get_text("\n", strip=True)[-4:]) if time_element else LAUNCH_TIME.year
         )
-        return release_date in self.config.release_date
+        return release_date in self.release_dates
 
     def get_complete_message(self) -> None:
         elapsed_time = get_time_now() - LAUNCH_TIME
         print(
             ConsoleColor.paint_success(SUCCESS_COMPLETE_TITLE)
-            + " " * (ProgressBar.get_length(self.config.total_urls) - len(SUCCESS_COMPLETE_TITLE)),
+            + " " * (ProgressBar.get_length(self.total_urls) - len(SUCCESS_COMPLETE_TITLE)),
             ConsoleColor.paint_info(TIME_ELAPSED_TEXT.format(time=elapsed_time)),
             sep="\n",
         )
 
     def __generate_urls(self) -> Generator[str, None, None]:
-        for month in range(1, self.config.total_months + 1):
+        for month in range(1, self.total_months + 1):
             for day in range(1, get_monthrange(month) + 1):
-                for offset in range(1, self.config.offset + 1):
-                    for title in self.config.titles:
+                for offset in range(1, self.offset + 1):
+                    for title in self.titles:
                         url = f"{TELEGRAPH_URL}/{title}-{month:02}-{day:02}"
                         yield (f"{url}-{offset}" if offset > 1 else url)
 
@@ -92,7 +101,7 @@ class TelegraphParser(ABC):
 
         self.get_complete_message()
 
-        # Complete 'output file' if child class
+        # complete 'output file' if child class
         # has an attribute whose type is YAMLOutputFile
         for _, attr_value in vars(self).items():
             if isinstance(attr_value, YAMLOutputFile):
@@ -103,9 +112,11 @@ class TelegraphParser(ABC):
 def run_parser(
     parser_class: TelegraphParser,
     *,
-    config_class: TelegraphParserConfig = TelegraphParserConfig,
+    titles: list[any],
     parser_args: list[any] | None = None,
-    config_path: str = "config",
+    offset: int = 1,
+    progress_bar: bool = True,
+    release_dates: tuple[int] | None = None,
 ) -> None:
     """Starts the parser
 
@@ -119,9 +130,11 @@ def run_parser(
     :param config_path: (String) path to the YAML configuration file without extension. Default value: 'config'
     """
     try:
-        config = config_class(config_path)
+        required_args = validate(titles, offset, progress_bar, release_dates)
         parser = (
-            parser_class(config) if parser_args is None else parser_class(config, *parser_args)
+            parser_class(required_args)
+            if parser_args is None
+            else parser_class(required_args, *parser_args)
         )
         asyncio.run(parser.main())
     except ApplicationException as exception:

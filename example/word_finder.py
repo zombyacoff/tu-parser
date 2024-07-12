@@ -1,21 +1,17 @@
-from tuparser import TelegraphParser, TelegraphParserConfig, YAMLOutputFile, run_parser
+from tuparser import TelegraphParser, YAMLOutputFile, run_parser
 
-
-class WordFinderConfig(TelegraphParserConfig):
-    def parse_config(self):
-        super().parse_config()
-        self.word = self.config.get("word")
+WORD = "dog"
 
 
 class WordFinder(TelegraphParser):
-    def __init__(self, config, output_file):
-        super().__init__(config)
+    def __init__(self, required_args, output_file):
+        super().__init__(required_args)
         self.output_file = output_file
 
     async def parse(self, url, soup):
         website_text = list(soup.stripped_strings)
         for sentence in website_text:
-            if self.config.word in sentence:
+            if WORD in sentence:
                 self.output_file.write_data(url)
 
 
@@ -23,6 +19,5 @@ output_file = YAMLOutputFile({"url": {}})
 run_parser(
     WordFinder,
     parser_args=[output_file],
-    config_class=WordFinderConfig,
-    config_path="word_finder_config",
+    titles=["cat", "dog"],
 )

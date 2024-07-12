@@ -7,19 +7,36 @@ class ValidatorException(ApplicationException): ...
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidValidationTypeError(ValidatorException):
-    validation_type: str
+class InvalidTitlesValuesError(ValidatorException):
+    values: str
 
     @property
     def message(self) -> str:
-        return f"Invalid validation type: {self.validation_type}"
+        return f"Invalid titles: {self.values}"
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidValidationValueError(ValidatorException):
+class InvalidOffsetValueError(ValidatorException):
     value: str
-    error_message: str
 
     @property
     def message(self) -> str:
-        return self.error_message.format(value=self.value)
+        return f"Invalid offset: {self.value}"
+
+
+@dataclass(frozen=True, eq=False)
+class InvalidProgressBarValueError(ValidatorException):
+    value: str
+
+    @property
+    def message(self) -> str:
+        return f"Invalid progress bar value: {self.value}\n(value must be a boolean)"
+
+
+@dataclass(frozen=True, eq=False)
+class InvalidReleaseDatesValuesError(ValidatorException):
+    values: str
+
+    @property
+    def message(self) -> str:
+        return f"Invalid release dates: {self.values}"
