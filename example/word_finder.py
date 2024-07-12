@@ -1,17 +1,18 @@
+from dataclasses import dataclass
+
 from tuparser import TelegraphParser, YAMLOutputFile, run_parser
 
 WORD = "animal"
 
 
+@dataclass
 class WordFinder(TelegraphParser):
-    def __init__(self, required_args, output_file):
-        super().__init__(required_args)
-        self.output_file = output_file
+    output_file: YAMLOutputFile
 
     async def parse(self, url, soup):
         website_text = list(soup.stripped_strings)
         for sentence in website_text:
-            if WORD in sentence:
+            if self.word in sentence:
                 self.output_file.write_data(url)
 
 

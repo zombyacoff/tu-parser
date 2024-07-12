@@ -1,7 +1,6 @@
 from .constants import TELEGRAPH_MIRROR_URL, TELEGRAPH_URL
 from .file_handling import FileManager, YAMLOutputFile
 from .parser import TelegraphParser, run_parser
-from .validator import validate
 
 __all__ = [
     "TELEGRAPH_MIRROR_URL",
@@ -10,7 +9,6 @@ __all__ = [
     "YAMLOutputFile",
     "TelegraphParser",
     "run_parser",
-    "validate",
 ]
 
 # This information is used in the setup.py file:

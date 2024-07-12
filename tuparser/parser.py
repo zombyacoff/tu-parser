@@ -12,8 +12,8 @@ from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, call_counter, get_monthrange, get_time_now
 from .validator import validate
 
-SEMAPHORE_MAX_LIMIT = 150
 HTTP_OK_STATUS = 200
+SEMAPHORE_MAX_LIMIT = 150
 
 PARSING_START_MESSAGE = """Parsing has started...
 Do not turn off the program until the process is completed!\n"""
@@ -113,10 +113,10 @@ def run_parser(
     parser_class: TelegraphParser,
     *,
     titles: list[any],
-    parser_args: list[any] | None = None,
     offset: int = 1,
     progress_bar: bool = True,
     release_dates: tuple[int] | None = None,
+    parser_args: list[any] | None = None,
 ) -> None:
     """Starts the parser
 
@@ -124,11 +124,11 @@ def run_parser(
     :param parser_class: (TelegraphParser) the parser class, which must inherit from TelegraphParser
 
     Optional configuration arguments:
-    :param titles: (List[any]) the titles of the telegraph articles
-    :param parser_args: (List[any]) arguments passed to the constructor of the parser class
-    :param offset: (Integer) the number of articles to parse per day
-    :param progress_bar: (Boolean) whether to display a progress bar or not
-    :param release_dates: (Tuple[int]) the years when the articles should be parsed
+    :param titles: (List[any]) the titles of the telegraph articles. Values must be a list without None
+    :param parser_args: (List[any]) arguments passed to the constructor of the parser class.
+    :param offset: (Integer) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
+    :param progress_bar: (Boolean) whether to display a progress bar or not. Value must be a boolean
+    :param release_dates: (Tuple[int]) the years when the articles should be parsed. Values must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """
     try:
         required_args = validate(titles, offset, progress_bar, release_dates)
