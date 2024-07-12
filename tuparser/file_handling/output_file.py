@@ -35,8 +35,4 @@ class YAMLOutputFile:
         FileManager.dump_yaml(self.file_path, self.data)
 
         if self.complete_message:
-            print(
-                ConsoleColor.paint_info(
-                    f"Output file path: {self.file_path}",
-                )
-            )
+            print(ConsoleColor.paint_info(f"Output file path: {self.file_path}"))
