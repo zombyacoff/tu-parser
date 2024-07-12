@@ -9,6 +9,9 @@ from .exceptions import (
     ValidatorException,
 )
 
+OFFSET_RANGE = (1, 250)
+RELEASE_DATES_RANGE = (0, LAUNCH_TIME.year)
+
 
 def check_range(value: int, value_range: tuple[int, int]) -> bool:
     return value_range[0] <= value <= value_range[1]
@@ -19,7 +22,7 @@ def validate_titles(values: any) -> bool:
 
 
 def validate_offset(value: any) -> bool:
-    return isinstance(value, int) and check_range(value, (2, 250))
+    return isinstance(value, int) and check_range(value, OFFSET_RANGE)
 
 
 def validate_progress_bar(value: any) -> bool:
@@ -28,7 +31,7 @@ def validate_progress_bar(value: any) -> bool:
 
 def validate_release_dates(values: any) -> bool:
     return isinstance(values, list) and all(
-        isinstance(value, int) and check_range(value, (0, LAUNCH_TIME.year)) for value in values
+        isinstance(value, int) and check_range(value, RELEASE_DATES_RANGE) for value in values
     )
 
 

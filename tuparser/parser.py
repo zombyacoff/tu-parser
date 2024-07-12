@@ -121,13 +121,14 @@ def run_parser(
     """Starts the parser
 
     Required arguments:
-    :param parser_class: (TelegraphParser) the parser class,
-    which must inherit from TelegraphParser
+    :param parser_class: (TelegraphParser) the parser class, which must inherit from TelegraphParser
 
     Optional configuration arguments:
-    :param config_class: (Config) custom configuration class, which must inherit from Config
-    :param parser_args: (List) arguments passed to the constructor of the parser class
-    :param config_path: (String) path to the YAML configuration file without extension. Default value: 'config'
+    :param titles: (List[any]) the titles of the telegraph articles
+    :param parser_args: (List[any]) arguments passed to the constructor of the parser class
+    :param offset: (Integer) the number of articles to parse per day
+    :param progress_bar: (Boolean) whether to display a progress bar or not
+    :param release_dates: (Tuple[int]) the years when the articles should be parsed
     """
     try:
         required_args = validate(titles, offset, progress_bar, release_dates)

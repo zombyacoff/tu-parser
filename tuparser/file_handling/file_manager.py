@@ -2,8 +2,6 @@ import os
 
 import yaml
 
-YAML_EXTENSIONS = (".yml", ".yaml")
-
 
 class FileManager:
     @staticmethod
@@ -23,16 +21,15 @@ class FileManager:
     def load_yaml(file_path: str) -> dict[any, any] | None:
         """Loads a YAML file and returns a dictionary
 
-        :param file_path: (String) YAML file path without file extension
+        :param file_path: (String) YAML file path
 
         :return: dictionary if successful, None otherwise
         """
-        for extension in YAML_EXTENSIONS:
-            try:
-                with open(file_path + extension, encoding="utf-8") as file:
-                    return yaml.safe_load(file)
-            except FileNotFoundError:
-                ...
+        try:
+            with open(file_path, encoding="utf-8") as file:
+                return yaml.safe_load(file)
+        except FileNotFoundError:
+            return None
 
     @staticmethod
     def dump_yaml(file_path: str, data: dict[any, any]) -> None:

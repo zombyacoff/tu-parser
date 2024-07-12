@@ -1,6 +1,6 @@
 from tuparser import TelegraphParser, YAMLOutputFile, run_parser
 
-WORD = "dog"
+WORD = "animal"
 
 
 class WordFinder(TelegraphParser):
