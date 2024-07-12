@@ -1,11 +1,11 @@
 .vscode
+
 *ruff*
 *cache*
+
+/*out*
+*test*
+
 /build
 /dist
 *egg*
-*yapf*
-
-/*out*
-/*lp*
-*test*
