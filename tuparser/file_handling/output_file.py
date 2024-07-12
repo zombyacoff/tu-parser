@@ -22,7 +22,7 @@ class YAMLOutputFile:
         Example:
             write_data('Alexey', 'Yaroslav', 'TUParser')
 
-        NOTE: the dictionary should have at least as many keys as the values passed.
+        NOTE: the dictionary should have at least as many keys as the values passed
         """
         for i, key in enumerate(self.data):
             self.data[key][self.write_data.calls] = data[i]
