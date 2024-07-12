@@ -1,18 +1,21 @@
-from dataclasses import dataclass, field
-
 from ..constants import LAUNCH_TIME
-from ..utils import call_counter
+from ..utils import ConsoleColor, call_counter
 from .file_manager import FileManager
 
 
-@dataclass
 class YAMLOutputFile:
-    data: dict[any, dict]
-    folder_path: str = field(default="output")
+    def __init__(
+        self,
+        data: dict[any, dict],
+        *,
+        folder_path: str = "output",
+        complete_message: bool = True,
+    ):
+        self.data = data
+        self.folder_path = folder_path
+        self.complete_message = complete_message
 
-    name: str = f"{LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")}.yml"
-
-    def __post_init__(self) -> None:
+        self.name = f"{LAUNCH_TIME.strftime('%d-%m-%Y-%H-%M-%S')}.yml"
         self.file_path = FileManager.join_paths(self.folder_path, self.name)
 
     @call_counter
@@ -30,3 +33,10 @@ class YAMLOutputFile:
     def complete(self) -> None:
         FileManager.create_folder(self.folder_path)
         FileManager.dump_yaml(self.file_path, self.data)
+
+        if self.complete_message:
+            print(
+                ConsoleColor.paint_info(
+                    f"Output file path: {self.file_path}",
+                )
+            )
