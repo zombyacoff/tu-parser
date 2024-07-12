@@ -106,6 +106,11 @@ class TelegraphParser(ABC):
         for _, attr_value in vars(self).items():
             if isinstance(attr_value, YAMLOutputFile):
                 attr_value.complete()
+                print(
+                    ConsoleColor.paint_info(
+                        f"Output file path: {self.output_file.file_path}",
+                    )
+                )
                 break
 
 
