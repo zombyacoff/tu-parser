@@ -28,7 +28,7 @@ def list_wtn(values: any) -> bool:
 
 
 def validate(*parser_args: tuple[any]) -> tuple[any]:
-    validate_dict = {
+    validation_rules = {
         "titles": (
             parser_args[0],
             list_wtn,
@@ -55,8 +55,9 @@ def validate(*parser_args: tuple[any]) -> tuple[any]:
             "Invalid messages value: {}\nValue must be a boolean",
         ),
     }
-    for params in validate_dict.values():
-        value, validate_function, exception_message = params
+    for rule in validation_rules.values():
+        value, validate_function, exception_message = rule
+
         if not validate_function(value):
             raise ValidatorException(value, exception_message)
 
