@@ -4,16 +4,9 @@ from .file_manager import FileManager
 
 
 class YAMLOutputFile:
-    def __init__(
-        self,
-        data: dict[any, dict],
-        *,
-        folder_path: str = "output",
-        complete_message: bool = True,
-    ):
+    def __init__(self, data: dict[any, dict], *, folder_path: str = "output"):
         self.data = data
         self.folder_path = folder_path
-        self.complete_message = complete_message
 
         self.name = f"{LAUNCH_TIME.strftime('%d-%m-%Y-%H-%M-%S')}.yml"
         self.file_path = FileManager.join_paths(self.folder_path, self.name)
@@ -30,9 +23,9 @@ class YAMLOutputFile:
         for i, key in enumerate(self.data):
             self.data[key][self.write_data.calls] = data[i]
 
-    def complete(self) -> None:
+    def complete(self, complete_message: bool) -> None:
         FileManager.create_folder(self.folder_path)
         FileManager.dump_yaml(self.file_path, self.data)
 
-        if self.complete_message:
+        if complete_message:
             print(ConsoleColor.paint_info(f"Output file path: {self.file_path}"))
