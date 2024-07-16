@@ -4,16 +4,18 @@ from typing import Any, Dict, Generator, List, Optional
 
 import aiohttp
 from bs4 import BeautifulSoup
+from tqdm.asyncio import tqdm
 
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
 from .exceptions import InvalidSettingsError
-from .extensions import ProgressBar
 from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, get_elapsed_time, get_monthrange
 from .validator import validate
 
 HTTP_OK_STATUS = 200
 SEMAPHORE_MAX_LIMIT = 150
+
+PROGRESS_BAR_FORMAT = "{bar} {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt} {postfix}]"
 
 PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
@@ -26,17 +28,18 @@ class TelegraphParser(ABC):
         self.messages_enabled = settings.get("messages")
         self.offset = settings.get("offset")
         self.published_years = settings.get("published_years")
+        self.progress_bar = settings.get("progress_bar")
 
         output_file = settings.get("output_file")
         self.output_file = YAMLOutputFile(*output_file) if output_file else False
 
         self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
-        self.total_days = (
+
+    def __get_total_urls(self) -> int:
+        total_days = (
             sum(get_monthrange(month) for month in range(1, self.total_months + 1)) if self.total_months != 12 else 366
         )
-        self.total_urls = len(self.titles) * self.offset * self.total_days
-
-        self.progress_bar = ProgressBar(self.total_urls) if settings.get("progress_bar") else False
+        return len(self.titles) * self.offset * total_days
 
     @abstractmethod
     async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
@@ -77,11 +80,18 @@ class TelegraphParser(ABC):
 
         async with aiohttp.ClientSession() as self.session:
             tasks = [self.__semaphore_process(url, semaphore) for url in urls_generator]
-            for task in asyncio.as_completed(tasks):
-                await task
+            tasks_iter = asyncio.as_completed(tasks)
+            if self.progress_bar:
+                tasks_iter = tqdm(
+                    tasks_iter,
+                    bar_format=PROGRESS_BAR_FORMAT,
+                    total=self.__get_total_urls(),
+                    leave=False,
+                    dynamic_ncols=True,
+                )
 
-                if self.progress_bar:
-                    self.progress_bar.update()
+            for task in tasks_iter:
+                await task
 
         if self.output_file:
             self.output_file.complete()
