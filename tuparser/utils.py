@@ -15,10 +15,6 @@ def get_formatted_time(time: timedelta) -> str:
     return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
 
-def get_elapsed_time(time: timedelta) -> str:
-    return get_formatted_time(get_time_now() - time)
-
-
 def get_monthrange(month: int) -> int:
     return monthrange(2020, month)[1]
 

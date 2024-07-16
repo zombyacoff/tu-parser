@@ -9,7 +9,7 @@ from tqdm.asyncio import tqdm
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
 from .exceptions import InvalidSettingsError
 from .file_handling import YAMLOutputFile
-from .utils import ConsoleColor, get_elapsed_time, get_monthrange
+from .utils import ConsoleColor, get_formatted_time, get_monthrange, get_time_now
 from .validator import validate
 
 HTTP_OK_STATUS = 200
@@ -103,9 +103,10 @@ class TelegraphParser(ABC):
         asyncio.run(self.__url_processing())
 
         if self.messages_enabled:
+            elapsed_time = get_formatted_time(get_time_now() - LAUNCH_TIME)
             print(
                 ConsoleColor.paint_success(SUCCESS_COMPLETE_TITLE),
-                ConsoleColor.paint_info(TIME_ELAPSED_TEXT.format(get_elapsed_time(LAUNCH_TIME))),
+                ConsoleColor.paint_info(TIME_ELAPSED_TEXT.format(elapsed_time)),
                 sep="\n",
             )
 
