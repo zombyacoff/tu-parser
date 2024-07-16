@@ -9,17 +9,30 @@ RAW_PROGRESS_BAR_LENGTH = 75
 
 class ProgressBar:
     def __init__(self, total: int) -> None:
-        self.current = 1
         self.total = total
+        self.current = 0
 
-    def show(self) -> None:
-        percent = 100 * self.current / self.total
-        current_bar_length = round(percent) // 2
-        bar = current_bar_length * FULL_CHAR + (50 - current_bar_length) * HALF_CHAR
-
-        print(bar, f"{percent:.2f}%", f"[{self.current}/{self.total}]", f"[{get_elapsed_time(LAUNCH_TIME)}]", end="\r")
-
+    def update(self) -> None:
         self.current += 1
+        percent = self.__calculate_percent()
+        bar = self.__generate_bar(percent)
+        self.__print_progress(bar, percent)
+
+    def __calculate_percent(self) -> float:
+        return 100 * self.current / self.total
+
+    def __generate_bar(self, percent: float) -> str:
+        current_bar_length = int(percent // 2)
+        return FULL_CHAR * current_bar_length + HALF_CHAR * (50 - current_bar_length)
+
+    def __print_progress(self, bar: str, percent: float) -> None:
+        if self.current == 1:
+            print()
+
+        print(f"{bar} {percent:.2f}% [{self.current}/{self.total}] [{get_elapsed_time(LAUNCH_TIME)}]", end="\r")
+
+        if self.current == self.total:
+            print("\n")
 
     @property
     def length(self) -> int:

@@ -8,7 +8,7 @@ class YAMLOutputFile:
         data: dict[str | int, dict],
         name: str = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S"),
         folder_path: str = "output",
-    ):
+    ) -> None:
         self.main_data = data
         self.name = f"{name}.yml"
         self.folder_path = folder_path
@@ -25,10 +25,9 @@ class YAMLOutputFile:
 
         NOTE: the dictionary should have at least as many keys as the values passed
         """
+        self.index += 1
         for i, key in enumerate(self.main_data):
             self.main_data[key][self.index] = data[i]
-
-        self.index += 1
 
     def complete(self) -> None:
         FileManager.create_folder(self.folder_path)

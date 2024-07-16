@@ -1,4 +1,4 @@
 from .base import BaseException
-from .validator import ValidatorException
+from .settings import InvalidSettingsError
 
-__all__ = ["BaseException", "ValidatorException"]
+__all__ = ["BaseException", "InvalidSettingsError"]

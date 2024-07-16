@@ -9,14 +9,14 @@ PASSWORD_REGEX = re.compile(r"\S*\d\S*")
 
 
 class LPParser(TelegraphParser):
-    async def parse(self, url: str, soup) -> None:
+    async def parse(self, url, soup) -> None:
         website_text = list(soup.stripped_strings)
         output_data = self.extract_credentials(website_text)
 
         if output_data[0] != "":
             self.output_file.write_data(*output_data, url)
 
-    def extract_credentials(self, website_text: list[str]) -> tuple[str, str]:
+    def extract_credentials(self, website_text):
         login = password = ""
         for i, current in enumerate(website_text):
             email_match = LOGIN_REGEX.search(current)

@@ -1,11 +1,11 @@
 import unittest
 
 from tuparser.constants import LAUNCH_TIME
-from tuparser.exceptions import ValidatorException
-from tuparser.validator import boolean, ensure_valide_data, offset, output_file, release_years, titles, validate
+from tuparser.exceptions import InvalidSettingsError
+from tuparser.validator import boolean, ensure_valide_data, offset, output_file, published_years, titles, validate
 
 
-class TestValidators(unittest.TestCase):
+class TestValidator(unittest.TestCase):
     def test_titles(self):
         self.assertTrue(titles(["a", "b", "c"]))
 
@@ -28,36 +28,50 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(offset("not an integer"))
 
     def test_output_file(self):
-        self.assertTrue(output_file([]))
+        self.assertTrue(output_file(None))
         self.assertTrue(output_file([{"a": {}}, "b", "c"]))
 
         self.assertFalse(output_file("not a list"))
         self.assertFalse(output_file([{"a": "not a dict"}, "b", "c"]))
         self.assertFalse(output_file([{"a": {"key": "not_empty"}}, "b", "c"]))
         self.assertFalse(output_file([{"a": {}}, 1, "c"]))
+        self.assertFalse(output_file([{"a": {}}, "b", "c", "d"]))
 
-    def test_release_years(self):
-        self.assertTrue(release_years([]))
-        self.assertTrue(release_years([2020, 2021, 2022]))
+    def test_published_years(self):
+        self.assertTrue(published_years(None))
+        self.assertTrue(published_years([2020, 2021, 2022]))
 
-        self.assertFalse(release_years("not a list"))
-        self.assertFalse(release_years([2020, "not an integer", 2022]))
-        self.assertFalse(release_years([2020, LAUNCH_TIME.year + 1]))
+        self.assertFalse(published_years("not a list"))
+        self.assertFalse(published_years([-1, LAUNCH_TIME.year]))
+        self.assertFalse(published_years([2020, "not an integer", 2022]))
+        self.assertFalse(published_years([2020, LAUNCH_TIME.year + 1]))
 
     def test_ensure_valide_data(self):
-        with self.assertRaises(ValidatorException):
-            ensure_valide_data(value="invalid value", validate_func=boolean, exception_message="invalid value: {}")
+        with self.assertRaises(InvalidSettingsError):
+            ensure_valide_data(value=0, validate_function=offset, exception_message="Error: {}")
+        ensure_valide_data(value=1, validate_function=offset, exception_message="Error: {}")
 
     def test_validate(self):
-        with self.assertRaises(ValidatorException):
-            validate({
-                "titles": "not a list",
-                "messages": True,
-                "offset": 2,
-                "output_file": [],
-                "progress_bar": True,
-                "release_years": [2020, 2021],
-            })
+        valid_settings = {
+            "titles": ["title1", "title2"],
+            "messages": True,
+            "offset": 100,
+            "output_file": None,
+            "progress_bar": False,
+            "published_years": [2000, 2020],
+        }
+        self.assertEqual(validate(valid_settings), valid_settings)
+
+        invalid_settings = {
+            "titles": [None, "title2"],
+            "messages": "True",
+            "offset": 251,
+            "output_file": [{"key": "value"}, "path1"],
+            "progress_bar": "False",
+            "published_years": [-1, 2020],
+        }
+        with self.assertRaises(InvalidSettingsError):
+            validate(invalid_settings)
 
 
 if __name__ == "__main__":

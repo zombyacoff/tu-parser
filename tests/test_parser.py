@@ -1,1 +1,1 @@
-# TODO: Тестирование класса TelegraphParser и функции run_parser.py
+# TODO: Реализовать тестирование класса TelegraphParser, а также функции run_parser

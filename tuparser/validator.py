@@ -1,33 +1,34 @@
-from typing import Callable
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, Tuple
 
 from .constants import LAUNCH_TIME
-from .exceptions import ValidatorException
+from .exceptions import InvalidSettingsError
 
 OFFSET_RANGE = (1, 250)
-RELEASE_YEARS_RANGE = (0, LAUNCH_TIME.year)
+PUBLISHED_YEARS_RANGE = (0, LAUNCH_TIME.year)
 
 
-def check_range(value: int, value_range: tuple[int, int]) -> bool:
+def check_range(value: int, value_range: Tuple[int, int]) -> bool:
     return value_range[0] <= value <= value_range[1]
 
 
-def titles(values: any) -> bool:
+def titles(values: Any) -> bool:
     return isinstance(values, list) and all(value is not None for value in values)
 
 
-def boolean(value: any) -> bool:
+def boolean(value: Any) -> bool:
     return isinstance(value, bool)
 
 
-def offset(value: any) -> bool:
+def offset(value: Any) -> bool:
     return isinstance(value, int) and check_range(value, OFFSET_RANGE)
 
 
-def output_file(values: any) -> bool:
+def output_file(values: Any) -> bool:
     def optional_is_string(index: int) -> bool:
         return isinstance(values[index], str) if len(values) >= index + 1 else True
 
-    return values == [] or (
+    return values is None or (
         isinstance(values, list)
         and len(values) <= 3
         and isinstance(values[0], dict)
@@ -37,48 +38,45 @@ def output_file(values: any) -> bool:
     )
 
 
-def release_years(values: any) -> bool:
-    return values == [] or (
+def published_years(values: Any) -> bool:
+    return values is None or (
         isinstance(values, list)
-        and all(isinstance(value, int) and check_range(value, RELEASE_YEARS_RANGE) for value in values)
+        and all(isinstance(value, int) and check_range(value, PUBLISHED_YEARS_RANGE) for value in values)
     )
 
 
-def ensure_valide_data(*, value: any, validate_func: Callable, exception_message: str) -> None:
-    if not validate_func(value):
-        raise ValidatorException(value, exception_message)
+def ensure_valide_data(*, value: Any, validate_function: Callable, exception_message: str) -> None:
+    if not validate_function(value):
+        raise InvalidSettingsError(exception_message.format(value))
 
 
-def validate(parser_args: dict[str, any]) -> dict[str, any]:
-    ensure_valide_data(
-        value=parser_args.get("titles"),
-        validate_func=titles,
-        exception_message="Invalid titles: {}\nValues must be a list without None",
-    )
-    ensure_valide_data(
-        value=parser_args.get("messages"),
-        validate_func=boolean,
-        exception_message="Invalid messages value: {}\nValue must be a boolean",
-    )
-    ensure_valide_data(
-        value=parser_args.get("offset"),
-        validate_func=offset,
-        exception_message="Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive",
-    )
-    ensure_valide_data(
-        value=parser_args.get("output_file"),
-        validate_func=output_file,
-        exception_message="Invalid output file value: {}\nTODO",
-    )
-    ensure_valide_data(
-        value=parser_args.get("progress_bar"),
-        validate_func=boolean,
-        exception_message="Invalid progress bar value: {}\nValue must be a boolean",
-    )
-    ensure_valide_data(
-        value=parser_args.get("release_years"),
-        validate_func=release_years,
-        exception_message="Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]",
-    )
+@dataclass
+class ValidationRules:
+    validation_function: Callable
+    exception_message: str
 
-    return parser_args
+
+validation_rules = {
+    "titles": ValidationRules(titles, "Invalid titles: {}\nValues must be a list without None"),
+    "messages": ValidationRules(boolean, "Invalid messages value: {}\nValue must be a boolean"),
+    "offset": ValidationRules(
+        offset, "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive"
+    ),
+    "output_file": ValidationRules(output_file, "Invalid output file value: {}\nTODO"),
+    "progress_bar": ValidationRules(boolean, "Invalid progress bar value: {}\nValue must be a boolean"),
+    "published_years": ValidationRules(
+        published_years,
+        "Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]",
+    ),
+}
+
+
+def validate(settings: Dict[str, Any]) -> Dict[str, Any]:
+    for setting, rules in validation_rules.items():
+        ensure_valide_data(
+            value=settings.get(setting),
+            validate_function=rules.validation_function,
+            exception_message=rules.exception_message,
+        )
+
+    return settings

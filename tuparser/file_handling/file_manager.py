@@ -1,4 +1,5 @@
 import os
+from typing import Dict, Optional
 
 import yaml
 
@@ -18,7 +19,7 @@ class FileManager:
             file.write(data)
 
     @staticmethod
-    def load_yaml(file_path: str) -> dict[any, any] | None:
+    def load_yaml(file_path: str) -> Optional[Dict]:
         """Loads a YAML file and returns a dictionary
 
         :param file_path: (String) YAML file path
@@ -32,7 +33,7 @@ class FileManager:
             return None
 
     @staticmethod
-    def dump_yaml(file_path: str, data: dict[any, any]) -> None:
+    def dump_yaml(file_path: str, data: Dict) -> None:
         """Dump a dictionary into a YAML file
 
         :param file_path: (String) YAML file path
