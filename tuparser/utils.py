@@ -10,7 +10,6 @@ def get_time_now() -> datetime:
 
 
 def get_formatted_time(time: timedelta) -> str:
-    # TODO: make this function better
     hours, remainder = divmod(time.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"

@@ -4,8 +4,6 @@ from ..utils import get_elapsed_time
 FULL_CHAR = "█"
 HALF_CHAR = "▒"
 
-RAW_PROGRESS_BAR_LENGTH = 75
-
 
 class ProgressBar:
     def __init__(self, total: int) -> None:
@@ -33,7 +31,3 @@ class ProgressBar:
 
         if self.current == self.total:
             print("\n")
-
-    @property
-    def length(self) -> int:
-        return RAW_PROGRESS_BAR_LENGTH + len(str(self.total)) * 2
