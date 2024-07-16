@@ -1,31 +1,35 @@
 from ..constants import LAUNCH_TIME
-from ..utils import ConsoleColor, call_counter
 from .file_manager import FileManager
 
 
 class YAMLOutputFile:
-    def __init__(self, data: dict[any, dict], *, folder_path: str = "output"):
-        self.data = data
+    def __init__(
+        self,
+        data: dict[str | int, dict],
+        name: str = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S"),
+        folder_path: str = "output",
+    ):
+        self.main_data = data
+        self.name = f"{name}.yml"
         self.folder_path = folder_path
 
-        self.name = f"{LAUNCH_TIME.strftime('%d-%m-%Y-%H-%M-%S')}.yml"
         self.file_path = FileManager.join_paths(self.folder_path, self.name)
 
-    @call_counter
-    def write_data(self, *data: any) -> None:
-        """Writes data to the dictionary 'data'
+        self.index = 0
 
-        Example:
-            write_data('Alexey', 'Yaroslav', 'TUParser')
+    def write_data(self, *data: any) -> None:
+        """Writes data to the main dictionary,
+        which will be stored in a YAML output file after parsing
+
+        Example: write_data('Alexey', 'Yaroslav', 'TUParser')
 
         NOTE: the dictionary should have at least as many keys as the values passed
         """
-        for i, key in enumerate(self.data):
-            self.data[key][self.write_data.calls] = data[i]
+        for i, key in enumerate(self.main_data):
+            self.main_data[key][self.index] = data[i]
 
-    def complete(self, complete_message: bool) -> None:
+        self.index += 1
+
+    def complete(self) -> None:
         FileManager.create_folder(self.folder_path)
-        FileManager.dump_yaml(self.file_path, self.data)
-
-        if complete_message:
-            print(ConsoleColor.paint_info(f"Output file path: {self.file_path}"))
+        FileManager.dump_yaml(self.file_path, self.main_data)

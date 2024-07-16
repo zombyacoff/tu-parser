@@ -1,10 +1,9 @@
 .vscode
 
-*ruff*
 *cache*
 
 /*out*
-*test*
+/ignore
 
 /build
 /dist
