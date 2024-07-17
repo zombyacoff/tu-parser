@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 
-from .base import BaseException
+from .base import ApplicationException
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidConfigurationError(BaseException):
+class InvalidConfigurationError(ApplicationException):
     error_message: str
 
     @property
