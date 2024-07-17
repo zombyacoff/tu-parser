@@ -1,7 +1,7 @@
 import unittest
 
 from tuparser.constants import LAUNCH_TIME
-from tuparser.exceptions import InvalidSettingsError
+from tuparser.exceptions import InvalidConfigurationError
 from tuparser.validator import boolean, ensure_valide_data, offset, output_file, published_years, titles, validate
 
 
@@ -47,12 +47,12 @@ class TestValidator(unittest.TestCase):
         self.assertFalse(published_years([2020, LAUNCH_TIME.year + 1]))
 
     def test_ensure_valide_data(self):
-        with self.assertRaises(InvalidSettingsError):
+        with self.assertRaises(InvalidConfigurationError):
             ensure_valide_data(value=0, validate_function=offset, exception_message="Error: {}")
         ensure_valide_data(value=1, validate_function=offset, exception_message="Error: {}")
 
     def test_validate(self):
-        valid_settings = {
+        valid_config = {
             "titles": ["title1", "title2"],
             "messages": True,
             "offset": 100,
@@ -60,9 +60,9 @@ class TestValidator(unittest.TestCase):
             "progress_bar": False,
             "published_years": [2000, 2020],
         }
-        self.assertEqual(validate(valid_settings), valid_settings)
+        self.assertEqual(validate(valid_config), valid_config)
 
-        invalid_settings = {
+        invalid_config = {
             "titles": [None, "title2"],
             "messages": "True",
             "offset": 251,
@@ -70,8 +70,8 @@ class TestValidator(unittest.TestCase):
             "progress_bar": "False",
             "published_years": [-1, 2020],
         }
-        with self.assertRaises(InvalidSettingsError):
-            validate(invalid_settings)
+        with self.assertRaises(InvalidConfigurationError):
+            validate(invalid_config)
 
 
 if __name__ == "__main__":

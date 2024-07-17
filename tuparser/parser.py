@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from tqdm.asyncio import tqdm
 
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
-from .exceptions import InvalidSettingsError
+from .exceptions import InvalidConfigurationError
 from .file_handling import YAMLOutputFile
 from .utils import ConsoleColor, get_formatted_time, get_monthrange, get_time_now
 from .validator import validate
@@ -16,23 +16,23 @@ HTTP_OK_STATUS = 200
 SEMAPHORE_MAX_LIMIT = 150
 
 PROGRESS_BAR_FORMAT = (
-    "{desc}... 🮇{bar:50}▎ {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
+    "{desc}... {bar:50}▎ {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
 )
 
-PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
+PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!\n"
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
 TIME_ELAPSED_TEXT = "Time elapsed: {}"
 
 
 class TelegraphParser(ABC):
-    def __init__(self, settings: dict[str, any]) -> None:
-        self.titles = settings.get("titles")
-        self.messages_enabled = settings.get("messages")
-        self.offset = settings.get("offset")
-        self.published_years = settings.get("published_years")
-        self.progress_bar = settings.get("progress_bar")
+    def __init__(self, config: dict[str, any]) -> None:
+        self.titles = config.get("titles")
+        self.messages_enabled = config.get("messages")
+        self.offset = config.get("offset")
+        self.published_years = config.get("published_years")
+        self.progress_bar = config.get("progress_bar")
 
-        output_file = settings.get("output_file")
+        output_file = config.get("output_file")
         self.output_file = YAMLOutputFile(*output_file) if output_file else False
 
         self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
@@ -143,7 +143,7 @@ def run_parser(
     """
 
     try:
-        settings = validate({
+        config = validate({
             "titles": titles,
             "messages": messages,
             "offset": offset,
@@ -151,8 +151,8 @@ def run_parser(
             "progress_bar": progress_bar,
             "published_years": published_years,
         })
-    except InvalidSettingsError as exception:
+    except InvalidConfigurationError as exception:
         exception.get_error_message(exception)
     else:
-        parser = parser_class(settings) if custom_args is None else parser_class(settings, *custom_args)
+        parser = parser_class(config) if custom_args is None else parser_class(config, *custom_args)
         parser.main()

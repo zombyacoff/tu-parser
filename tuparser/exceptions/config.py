@@ -4,7 +4,7 @@ from .base import BaseException
 
 
 @dataclass(frozen=True, eq=False)
-class InvalidSettingsError(BaseException):
+class InvalidConfigurationError(BaseException):
     error_message: str
 
     @property

@@ -3,7 +3,7 @@ from typing import Callable
 from enum import Enum
 
 from .constants import LAUNCH_TIME
-from .exceptions import InvalidSettingsError
+from .exceptions import InvalidConfigurationError
 
 
 class Ranges(Enum):
@@ -50,7 +50,7 @@ def published_years(values: any) -> bool:
 
 def ensure_valide_data(*, value: any, validate_function: Callable, exception_message: str) -> None:
     if not validate_function(value):
-        raise InvalidSettingsError(exception_message.format(value))
+        raise InvalidConfigurationError(exception_message.format(value))
 
 
 @dataclass
@@ -74,12 +74,12 @@ validation_rules = {
 }
 
 
-def validate(settings: dict[str, any]) -> dict[str, any]:
+def validate(config: dict[str, any]) -> dict[str, any]:
     for setting, rules in validation_rules.items():
         ensure_valide_data(
-            value=settings.get(setting),
+            value=config.get(setting),
             validate_function=rules.validation_function,
             exception_message=rules.exception_message,
         )
 
-    return settings
+    return config

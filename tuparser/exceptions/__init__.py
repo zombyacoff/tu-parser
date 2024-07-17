@@ -1,4 +1,4 @@
 from .base import BaseException
-from .settings import InvalidSettingsError
+from .config import InvalidConfigurationError
 
-__all__ = ["BaseException", "InvalidSettingsError"]
+__all__ = ["BaseException", "InvalidConfigurationError"]
