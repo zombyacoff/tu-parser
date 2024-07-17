@@ -15,7 +15,7 @@ from .validator import validate
 HTTP_OK_STATUS = 200
 SEMAPHORE_MAX_LIMIT = 150
 
-PROGRESS_BAR_FORMAT = "{bar} {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt} {postfix}]"
+PROGRESS_BAR_FORMAT = "{bar} {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
 
 PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
@@ -36,9 +36,7 @@ class TelegraphParser(ABC):
         self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
 
     def __get_total_urls(self) -> int:
-        total_days = (
-            sum(get_monthrange(month) for month in range(1, self.total_months + 1)) if self.total_months != 12 else 366
-        )
+        total_days = sum(get_monthrange(month) for month in range(1, self.total_months + 1))
         return len(self.titles) * self.offset * total_days
 
     @abstractmethod
@@ -48,7 +46,7 @@ class TelegraphParser(ABC):
         if not self.published_years:
             return True
 
-        published_year = soup.find("meta", property="article:published_time").get("content")[:4]
+        published_year = int(soup.find("meta", property="article:published_time").get("content")[:4])
         return published_year in self.published_years
 
     async def __validate_url(self, url: str) -> None:
@@ -79,18 +77,15 @@ class TelegraphParser(ABC):
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
 
         async with aiohttp.ClientSession() as self.session:
-            tasks = [self.__semaphore_process(url, semaphore) for url in urls_generator]
-            tasks_iter = asyncio.as_completed(tasks)
+            tasks = [asyncio.create_task(self.__semaphore_process(url, semaphore)) for url in urls_generator]
+
+            completed_tasks = asyncio.as_completed(tasks)
             if self.progress_bar:
-                tasks_iter = tqdm(
-                    tasks_iter,
-                    bar_format=PROGRESS_BAR_FORMAT,
-                    total=self.__get_total_urls(),
-                    leave=False,
-                    dynamic_ncols=True,
+                completed_tasks = tqdm(
+                    completed_tasks, bar_format=PROGRESS_BAR_FORMAT, total=self.__get_total_urls(), leave=False
                 )
 
-            for task in tasks_iter:
+            for task in completed_tasks:
                 await task
 
         if self.output_file:
@@ -135,7 +130,7 @@ def run_parser(
     :param custom_args: (List[Any]) arguments passed to the constructor of the parser class
     :param messages: (bool) whether to display the messages or not
     :param offset: (Integer) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
-    :param output_file: (List[Any]) the output file configuration
+    :param output_file: (List[Any]) the output file configuration. TODO
     :param progress_bar: (bool) whether to display a progress bar or not
     :param published_years: (List[int]) the years when the articles should be parsed. Values must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """

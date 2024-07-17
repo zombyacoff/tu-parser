@@ -30,7 +30,7 @@ def output_file(values: Any) -> bool:
 
     return values is None or (
         isinstance(values, list)
-        and len(values) <= 3
+        and 1 <= len(values) <= 3
         and isinstance(values[0], dict)
         and all(value == {} for value in values[0].values())
         and optional_is_string(1)
