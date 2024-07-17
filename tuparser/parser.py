@@ -1,6 +1,6 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generator, List, Optional
+from typing import Generator
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -25,7 +25,7 @@ TIME_ELAPSED_TEXT = "Time elapsed: {}"
 
 
 class TelegraphParser(ABC):
-    def __init__(self, settings: Dict[str, Any]) -> None:
+    def __init__(self, settings: dict[str, any]) -> None:
         self.titles = settings.get("titles")
         self.messages_enabled = settings.get("messages")
         self.offset = settings.get("offset")
@@ -80,8 +80,8 @@ class TelegraphParser(ABC):
 
         async with aiohttp.ClientSession() as self.session:
             tasks = [asyncio.create_task(self.__semaphore_process(url, semaphore)) for url in urls_generator]
-
             completed_tasks = asyncio.as_completed(tasks)
+
             if self.progress_bar:
                 completed_tasks = tqdm(
                     completed_tasks,
@@ -119,27 +119,27 @@ class TelegraphParser(ABC):
 def run_parser(
     parser_class: TelegraphParser,
     *,
-    titles: List[Any],
-    custom_args: Optional[List[Any]] = None,
+    titles: list[str | int],
+    custom_args: list | None = None,
     messages: bool = True,
     offset: int = 1,
-    output_file: Optional[List[Any]] = None,
+    output_file: list | None = None,
     progress_bar: bool = True,
-    published_years: Optional[List[Any]] = None,
+    published_years: list[int] | None = None,
 ) -> None:
     """Starts the parser
 
     Required arguments:
     :param parser_class: (TelegraphParser) the parser class, which must inherit from TelegraphParser
-    :param titles: (List[Any]) the titles of the telegraph articles. Values must be a list without None
+    :param titles: (list[str | int]) the titles of the telegraph articles. Values must be a list without None
 
     Optional configuration arguments:
-    :param custom_args: (List[Any]) arguments passed to the constructor of the parser class
+    :param custom_args: (list) arguments passed to the constructor of the parser class
     :param messages: (bool) whether to display the messages or not
-    :param offset: (Integer) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
-    :param output_file: (List[Any]) the output file configuration. TODO
+    :param offset: (int) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
+    :param output_file: (list) the output file configuration. TODO
     :param progress_bar: (bool) whether to display a progress bar or not
-    :param published_years: (List[int]) the years when the articles should be parsed. Values must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
+    :param published_years: (list[int]) the years when the articles should be parsed. Values must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """
 
     try:

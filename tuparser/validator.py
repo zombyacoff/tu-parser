@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Tuple
+from typing import Callable
 
 from .constants import LAUNCH_TIME
 from .exceptions import InvalidSettingsError
@@ -8,23 +8,23 @@ OFFSET_RANGE = (1, 250)
 PUBLISHED_YEARS_RANGE = (0, LAUNCH_TIME.year)
 
 
-def check_range(value: int, value_range: Tuple[int, int]) -> bool:
+def check_range(value: int, value_range: tuple[int, int]) -> bool:
     return value_range[0] <= value <= value_range[1]
 
 
-def titles(values: Any) -> bool:
+def titles(values: any) -> bool:
     return isinstance(values, list) and all(value is not None for value in values)
 
 
-def boolean(value: Any) -> bool:
+def boolean(value: any) -> bool:
     return isinstance(value, bool)
 
 
-def offset(value: Any) -> bool:
+def offset(value: any) -> bool:
     return isinstance(value, int) and check_range(value, OFFSET_RANGE)
 
 
-def output_file(values: Any) -> bool:
+def output_file(values: any) -> bool:
     def optional_is_string(index: int) -> bool:
         return isinstance(values[index], str) if len(values) >= index + 1 else True
 
@@ -38,14 +38,14 @@ def output_file(values: Any) -> bool:
     )
 
 
-def published_years(values: Any) -> bool:
+def published_years(values: any) -> bool:
     return values is None or (
         isinstance(values, list)
         and all(isinstance(value, int) and check_range(value, PUBLISHED_YEARS_RANGE) for value in values)
     )
 
 
-def ensure_valide_data(*, value: Any, validate_function: Callable, exception_message: str) -> None:
+def ensure_valide_data(*, value: any, validate_function: Callable, exception_message: str) -> None:
     if not validate_function(value):
         raise InvalidSettingsError(exception_message.format(value))
 
@@ -71,7 +71,7 @@ validation_rules = {
 }
 
 
-def validate(settings: Dict[str, Any]) -> Dict[str, Any]:
+def validate(settings: dict[str, any]) -> dict[str, any]:
     for setting, rules in validation_rules.items():
         ensure_valide_data(
             value=settings.get(setting),
