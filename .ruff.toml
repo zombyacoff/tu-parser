@@ -8,6 +8,8 @@ docstring-code-format = true
 
 [lint]
 ignore = [
+  "RUF003",
+  "PERF203",
   "RUF012",
   "ANN",  
   "E722",
