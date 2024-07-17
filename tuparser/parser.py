@@ -16,7 +16,7 @@ HTTP_OK_STATUS = 200
 SEMAPHORE_MAX_LIMIT = 150
 
 PROGRESS_BAR_FORMAT = (
-    "{desc}... {bar:50} {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
+    "{desc}... 🮇{bar:50}▎ {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
 )
 
 PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
