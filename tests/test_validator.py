@@ -39,7 +39,7 @@ class TestValidator(unittest.TestCase):
 
     def test_published_years(self):
         self.assertTrue(published_years(None))
-        self.assertTrue(published_years([2020, 2021, 2022]))
+        self.assertTrue(published_years([2020, 2021, LAUNCH_TIME.year]))
 
         self.assertFalse(published_years("not a list"))
         self.assertFalse(published_years([-1, LAUNCH_TIME.year]))
