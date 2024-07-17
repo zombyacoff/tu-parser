@@ -119,7 +119,7 @@ class TelegraphParser(ABC):
 def run_parser(
     parser_class: TelegraphParser,
     *,
-    titles: list[str | int],
+    titles: list,
     custom_args: list | None = None,
     messages: bool = True,
     offset: int = 1,
@@ -130,16 +130,16 @@ def run_parser(
     """Starts the parser
 
     Required arguments:
-    :param parser_class: (TelegraphParser) the parser class, which must inherit from TelegraphParser
-    :param titles: (list[str | int]) the titles of the telegraph articles. Values must be a list without None
+        :param parser_class: (TelegraphParser) the parser class, which must inherit from TelegraphParser
+        :param titles: (list[str | int]) the titles of the telegraph articles. Value must be a list without None
 
     Optional configuration arguments:
-    :param custom_args: (list) arguments passed to the constructor of the parser class
-    :param messages: (bool) whether to display the messages or not
-    :param offset: (int) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
-    :param output_file: (list) the output file configuration. TODO
-    :param progress_bar: (bool) whether to display a progress bar or not
-    :param published_years: (list[int]) the years when the articles should be parsed. Values must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
+        :param custom_args: (list) arguments passed to the constructor of the parser class
+        :param messages: (bool) whether to display the messages or not
+        :param offset: (int) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
+        :param output_file: (list) the output file configuration. TODO
+        :param progress_bar: (bool) whether to display a progress bar or not
+        :param published_years: (list[int]) the years when the articles should be parsed. Value must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """
 
     try:
