@@ -15,7 +15,9 @@ from .validator import validate
 HTTP_OK_STATUS = 200
 SEMAPHORE_MAX_LIMIT = 150
 
-PROGRESS_BAR_FORMAT = "{bar} {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
+PROGRESS_BAR_FORMAT = (
+    "{bar:50} {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
+)
 
 PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
@@ -82,7 +84,12 @@ class TelegraphParser(ABC):
             completed_tasks = asyncio.as_completed(tasks)
             if self.progress_bar:
                 completed_tasks = tqdm(
-                    completed_tasks, bar_format=PROGRESS_BAR_FORMAT, total=self.__get_total_urls(), leave=False
+                    completed_tasks,
+                    desc="Parsing",
+                    total=self.__get_total_urls(),
+                    bar_format=PROGRESS_BAR_FORMAT,
+                    unit="urls",
+                    leave=False,
                 )
 
             for task in completed_tasks:
