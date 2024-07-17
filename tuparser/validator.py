@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 from typing import Callable
+from enum import Enum
 
 from .constants import LAUNCH_TIME
 from .exceptions import InvalidSettingsError
 
-OFFSET_RANGE = (1, 250)
-PUBLISHED_YEARS_RANGE = (0, LAUNCH_TIME.year)
+
+class Ranges(Enum):
+    offset = (1, 250)
+    published_years = (0, LAUNCH_TIME.year)
 
 
 def check_range(value: int, value_range: tuple[int, int]) -> bool:
@@ -21,7 +24,7 @@ def boolean(value: any) -> bool:
 
 
 def offset(value: any) -> bool:
-    return isinstance(value, int) and check_range(value, OFFSET_RANGE)
+    return isinstance(value, int) and check_range(value, Ranges.offset.value)
 
 
 def output_file(values: any) -> bool:
@@ -41,7 +44,7 @@ def output_file(values: any) -> bool:
 def published_years(values: any) -> bool:
     return values is None or (
         isinstance(values, list)
-        and all(isinstance(value, int) and check_range(value, PUBLISHED_YEARS_RANGE) for value in values)
+        and all(isinstance(value, int) and check_range(value, Ranges.published_years.value) for value in values)
     )
 
 
