@@ -48,8 +48,8 @@ class TestValidator(unittest.TestCase):
 
     def test_ensure_valide_data(self):
         with self.assertRaises(InvalidConfigurationError):
-            ensure_valide_data(value=0, validate_function=offset, exception_message="Error: {}")
-        ensure_valide_data(value=1, validate_function=offset, exception_message="Error: {}")
+            ensure_valide_data(value=0, validation_condition=offset, exception_message="Error: {}")
+        ensure_valide_data(value=1, validation_condition=offset, exception_message="Error: {}")
 
     def test_validate(self):
         valid_config = {

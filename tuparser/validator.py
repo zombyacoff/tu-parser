@@ -48,14 +48,14 @@ def published_years(values: any) -> bool:
     )
 
 
-def ensure_valide_data(*, value: any, validate_function: Callable, exception_message: str) -> None:
-    if not validate_function(value):
+def ensure_valide_data(*, value: any, validation_condition: Callable, exception_message: str) -> None:
+    if not validation_condition(value):
         raise InvalidConfigurationError(exception_message.format(value))
 
 
 @dataclass
 class ValidationRules:
-    validation_function: Callable
+    validation_condition: Callable
     exception_message: str
 
 
@@ -78,7 +78,7 @@ def validate(config: dict[str, any]) -> dict[str, any]:
     for setting, rules in validation_rules.items():
         ensure_valide_data(
             value=config.get(setting),
-            validate_function=rules.validation_function,
+            validation_condition=rules.validation_condition,
             exception_message=rules.exception_message,
         )
 
