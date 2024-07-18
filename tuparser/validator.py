@@ -1,115 +1,85 @@
-from .exceptions import InvalidValidationTypeError, InvalidValidationValueError
+from dataclasses import dataclass
+from typing import Callable
+from enum import Enum
+
+from .constants import LAUNCH_TIME
+from .exceptions import InvalidConfigurationError
 
 
-def check_condition(condition: bool, value: any, exception_message: str) -> None:
-    if not condition:
-        raise InvalidValidationValueError(value, exception_message)
+class Ranges(Enum):
+    offset = (1, 250)
+    published_years = (0, LAUNCH_TIME.year)
 
 
-def check_range(value: int, value_range: tuple[int, int] | None) -> bool:
-    # Checks that the integer value is within the range
-    # if value_range is specified
-    return value_range is None or value_range[0] <= value <= value_range[1]
+def check_range(value: int, value_range: tuple[int, int]) -> bool:
+    return value_range[0] <= value <= value_range[1]
 
 
-def boolean(value: any, exception_message: str) -> bool:
-    # Checks if the value is of type bool
-    check_condition(isinstance(value, bool), value, exception_message)
-
-    return value
+def titles(values: any) -> bool:
+    return isinstance(values, list) and all(value is not None for value in values)
 
 
-def integer(value: int, exception_message: str, value_range: tuple[int, int] | None) -> int:
-    # Checks if the value is of type int,
-    # and if the range of acceptable values is specified,
-    # verifies that the value is within the range
-    check_condition(
-        isinstance(value, int) and check_range(value, value_range),
-        value,
-        exception_message,
-    )
-
-    return value
+def boolean(value: any) -> bool:
+    return isinstance(value, bool)
 
 
-def integer_list(
-    values: any, exception_message: str, value_range: tuple[int, int] | None
-) -> list[int]:
-    # Checks if the value is of type list,
-    # and ensures that all values in the list are of type int.
-    # If the range of acceptable values is specified,
-    # verifies that each value in the list is within the range
-    check_condition(
+def offset(value: any) -> bool:
+    return isinstance(value, int) and check_range(value, Ranges.offset.value)
+
+
+def output_file(values: any) -> bool:
+    def optional_is_string(index: int) -> bool:
+        return isinstance(values[index], str) if len(values) >= index + 1 else True
+
+    return values is None or (
         isinstance(values, list)
-        and all(isinstance(value, int) and check_range(value, value_range) for value in values),
-        values,
-        exception_message,
+        and 1 <= len(values) <= 3
+        and isinstance(values[0], dict)
+        and all(value == {} for value in values[0].values())
+        and optional_is_string(1)
+        and optional_is_string(2)
     )
 
-    return values
 
-
-def any_list_wn(values: any, exception_message: str) -> list[any]:
-    # Checks if the value is of type list,
-    # and ensures that none of the values in the list are None
-    check_condition(
-        isinstance(values, list) and all(value is not None for value in values),
-        values,
-        exception_message,
+def published_years(values: any) -> bool:
+    return values is None or (
+        isinstance(values, list)
+        and all(isinstance(value, int) and check_range(value, Ranges.published_years.value) for value in values)
     )
 
-    return values
+
+def ensure_valide_data(*, value: any, validation_condition: Callable, exception_message: str) -> None:
+    if not validation_condition(value):
+        raise InvalidConfigurationError(exception_message.format(value))
 
 
-def validate(
-    value: any,
-    validation_type: str,
-    *,
-    default_value: any = None,
-    value_range: tuple[int, int] | None = None,
-    exception_message: str = "Invalid value: {value}",
-) -> any:
-    """Validates the value according to the specified validation type
+@dataclass
+class ValidationRules:
+    validation_condition: Callable
+    exception_message: str
 
-    Required arguments:
-    :param value: (Any) the value to be validated
-    :param validation_type: (String) the type of validation
-        "boolean": checks if the value is of type bool
-        "integer": checks if the value is of type int, and if the range of
-        acceptable values is specified, verifies that the value is within the range
-        "integer_list": checks if the value is of type list, and ensures that
-        all values in the list are of type int. If the range of acceptable
-        values is specified, verifies that each value in the list is within the range
-        "any_list_wn": checks if the value is of type list, and ensures that
-        none of the values in the list are None
 
-    Optional configuration arguments:
-    :param default_value: (Any) the default value. The function returns this value if it is False,
-    but only if the validation type != "boolean"
-    :param value_range: (Tuple[int, int]) the range of acceptable values.
-    Can be set if the validation type = "integer"/"integer_list"
-    :param exception_message: (String) the error message if the value fails validation.
-    Default value: "Invalid value: {value}"
+validation_rules = {
+    "titles": ValidationRules(titles, "Invalid titles: {}\nValues must be a list without None"),
+    "messages": ValidationRules(boolean, "Invalid messages value: {}\nValue must be a boolean"),
+    "offset": ValidationRules(
+        offset, "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive"
+    ),
+    "output_file": ValidationRules(output_file, "Invalid output file value: {}\nTODO"),
+    "progress_bar": ValidationRules(boolean, "Invalid progress bar value: {}\nValue must be a boolean"),
+    "published_years": ValidationRules(
+        published_years,
+        "Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]",
+    ),
+}
 
-    :return: the default value, in the case described above.
-    If the validation is successful, returns the value that was initially
-    passed to the function.
-    """
-    if validation_type != "boolean" and value is False:
-        return default_value
 
-    match validation_type:
-        case "boolean":
-            return boolean(value, exception_message)
+def validate(config: dict[str, any]) -> dict[str, any]:
+    for setting, rules in validation_rules.items():
+        ensure_valide_data(
+            value=config.get(setting),
+            validation_condition=rules.validation_condition,
+            exception_message=rules.exception_message,
+        )
 
-        case "integer":
-            return integer(value, exception_message, value_range)
-
-        case "integer_list":
-            return integer_list(value, exception_message, value_range)
-
-        case "any_list_wn":
-            return any_list_wn(value, exception_message)
-
-        case _:
-            raise InvalidValidationTypeError(validation_type=validation_type)
+    return config

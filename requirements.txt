@@ -2,3 +2,4 @@ aiohttp
 bs4
 PyYaml
 termcolor
+tqdm

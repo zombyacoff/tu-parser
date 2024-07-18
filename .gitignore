@@ -1,11 +1,10 @@
 .vscode
-*ruff*
+
 *cache*
+
+/*out*
+*ignore*
+
 /build
 /dist
 *egg*
-*yapf*
-
-/*out*
-/*lp*
-*test*

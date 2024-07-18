@@ -16,8 +16,7 @@ setup(
     author=tuparser.__author__,
     author_email=tuparser.__email__,
     url=tuparser.__git_url__,
-    description=
-    "A flexible module for building custom parsers for the Telegraph website",
+    description="A flexible module for building custom parsers for the Telegraph website",
     long_description=dedent(f"""\
         # Telegraph Universal Parser
         **Telegraph Universal Parser (tu-parser)** is a flexible module designed for creating custom parsers for the [Telegraph]({tuparser.TELEGRAPH_URL}) website.
@@ -27,7 +26,7 @@ setup(
     install_requires=get_requirements(),
     python_requires=">=3.12",
     classifiers=[
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3.12",
     ],
