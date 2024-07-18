@@ -2,7 +2,15 @@ import unittest
 
 from tuparser.constants import LAUNCH_TIME
 from tuparser.exceptions import InvalidConfigurationError
-from tuparser.validator import boolean, ensure_valide_data, offset, output_file, published_years, titles, validate
+from tuparser.validator import (
+    boolean,
+    ensure_valide_data,
+    offset,
+    output_file,
+    published_years,
+    titles,
+    validate,
+)
 
 
 class TestValidator(unittest.TestCase):

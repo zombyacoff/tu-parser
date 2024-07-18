@@ -15,11 +15,11 @@ from .validator import validate
 HTTP_OK_STATUS = 200
 SEMAPHORE_MAX_LIMIT = 150
 
-PROGRESS_BAR_FORMAT = (
-    "{desc}... |{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
-)
+PROGRESS_BAR_FORMAT = "{desc}... |{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
 
-PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
+PARSING_START_MESSAGE = (
+    "Parsing has started...\nDo not turn off the program until the process is completed!"
+)
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
 TIME_ELAPSED_TEXT = "Time elapsed: {}"
 
@@ -48,7 +48,9 @@ class TelegraphParser(ABC):
         if not self.published_years:
             return True
 
-        published_year = int(soup.find("meta", property="article:published_time").get("content")[:4])
+        published_year = int(
+            soup.find("meta", property="article:published_time").get("content")[:4]
+        )
         return published_year in self.published_years
 
     async def __validate_url(self, url: str) -> None:
@@ -79,7 +81,10 @@ class TelegraphParser(ABC):
         semaphore = asyncio.Semaphore(SEMAPHORE_MAX_LIMIT)
 
         async with aiohttp.ClientSession() as self.session:
-            tasks = [asyncio.create_task(self.__semaphore_process(url, semaphore)) for url in urls_generator]
+            tasks = [
+                asyncio.create_task(self.__semaphore_process(url, semaphore))
+                for url in urls_generator
+            ]
             completed_tasks = asyncio.as_completed(tasks)
 
             if self.progress_bar:
@@ -154,5 +159,7 @@ def run_parser(
     except InvalidConfigurationError as exception:
         exception.get_error_message(exception)
     else:
-        parser = parser_class(config) if custom_args is None else parser_class(config, *custom_args)
+        parser = (
+            parser_class(config) if custom_args is None else parser_class(config, *custom_args)
+        )
         parser.main()

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import Callable
 from enum import Enum
+from typing import Callable
 
 from .constants import LAUNCH_TIME
 from .exceptions import InvalidConfigurationError
@@ -44,11 +44,16 @@ def output_file(values: any) -> bool:
 def published_years(values: any) -> bool:
     return values is None or (
         isinstance(values, list)
-        and all(isinstance(value, int) and check_range(value, Ranges.published_years.value) for value in values)
+        and all(
+            isinstance(value, int) and check_range(value, Ranges.published_years.value)
+            for value in values
+        )
     )
 
 
-def ensure_valide_data(*, value: any, validation_condition: Callable, exception_message: str) -> None:
+def ensure_valide_data(
+    *, value: any, validation_condition: Callable, exception_message: str
+) -> None:
     if not validation_condition(value):
         raise InvalidConfigurationError(exception_message.format(value))
 
@@ -63,10 +68,13 @@ validation_rules = {
     "titles": ValidationRules(titles, "Invalid titles: {}\nValues must be a list without None"),
     "messages": ValidationRules(boolean, "Invalid messages value: {}\nValue must be a boolean"),
     "offset": ValidationRules(
-        offset, "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive"
+        offset,
+        "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive",
     ),
     "output_file": ValidationRules(output_file, "Invalid output file value: {}\nTODO"),
-    "progress_bar": ValidationRules(boolean, "Invalid progress bar value: {}\nValue must be a boolean"),
+    "progress_bar": ValidationRules(
+        boolean, "Invalid progress bar value: {}\nValue must be a boolean"
+    ),
     "published_years": ValidationRules(
         published_years,
         "Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]",

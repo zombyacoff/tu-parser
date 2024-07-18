@@ -37,4 +37,6 @@ class LPParser(TelegraphParser):
         return login, password
 
 
-run_parser(LPParser, titles=["PLACEHOLDER"], output_file=[{"login": {}, "password": {}, "url": {}}])
+run_parser(
+    LPParser, titles=["PLACEHOLDER"], output_file=[{"login": {}, "password": {}, "url": {}}]
+)
