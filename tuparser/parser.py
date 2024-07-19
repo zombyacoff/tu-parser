@@ -17,9 +17,7 @@ SEMAPHORE_MAX_LIMIT = 150
 
 PROGRESS_BAR_FORMAT = "{desc}... |{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}{postfix}]"
 
-PARSING_START_MESSAGE = (
-    "Parsing has started...\nDo not turn off the program until the process is completed!"
-)
+PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
 SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
 TIME_ELAPSED_TEXT = "Time elapsed: {}"
 
@@ -142,7 +140,8 @@ def run_parser(
         :param custom_args: (list) arguments passed to the constructor of the parser class
         :param messages: (bool) whether to display the messages or not
         :param offset: (int) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
-        :param output_file: (list) the output file configuration. TODO
+        :param output_file: (list) the output file configuration. The value must be a list with 1 to 3 elements. The first is a dictionary with empty dictionaries as values.
+        The second is the output file name. The third is the output file path. The second and third are strings.
         :param progress_bar: (bool) whether to display a progress bar or not
         :param published_years: (list[int]) the years when the articles should be parsed. Value must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """

@@ -51,42 +51,43 @@ def published_years(values: any) -> bool:
     )
 
 
-def ensure_valide_data(
-    *, value: any, validation_condition: Callable, exception_message: str
-) -> None:
-    if not validation_condition(value):
+def ensure_valide_data(*, value: any, condition: Callable, exception_message: str) -> None:
+    if not condition(value):
         raise InvalidConfigurationError(exception_message.format(value))
 
 
 @dataclass
 class ValidationRules:
-    validation_condition: Callable
+    condition: Callable
     exception_message: str
 
 
 validation_rules = {
-    "titles": ValidationRules(titles, "Invalid titles: {}\nValues must be a list without None"),
-    "messages": ValidationRules(boolean, "Invalid messages value: {}\nValue must be a boolean"),
+    "titles": ValidationRules(titles, "Invalid titles: {}\nValues must be a list without None."),
+    "messages": ValidationRules(boolean, "Invalid messages value: {}\nValue must be a boolean."),
     "offset": ValidationRules(
         offset,
-        "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive",
+        "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive.",
     ),
-    "output_file": ValidationRules(output_file, "Invalid output file value: {}\nTODO"),
+    "output_file": ValidationRules(
+        output_file,
+        "Invalid output file value: {}\nValue must be a list with 1 to 3 elements. The first is a dictionary with empty dictionaries as values.\nThe second is the output file name. The third is the output file path. The second and third are strings.",
+    ),
     "progress_bar": ValidationRules(
-        boolean, "Invalid progress bar value: {}\nValue must be a boolean"
+        boolean, "Invalid progress bar value: {}\nValue must be a boolean."
     ),
     "published_years": ValidationRules(
         published_years,
-        "Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]",
+        "Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR].",
     ),
 }
 
 
 def validate(config: dict[str, any]) -> dict[str, any]:
-    for setting, rules in validation_rules.items():
+    for param, rules in validation_rules.items():
         ensure_valide_data(
-            value=config.get(setting),
-            validation_condition=rules.validation_condition,
+            value=config.get(param),
+            condition=rules.condition,
             exception_message=rules.exception_message,
         )
 
