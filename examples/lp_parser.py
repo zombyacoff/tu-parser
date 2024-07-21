@@ -38,5 +38,7 @@ class LPParser(TelegraphParser):
 
 
 run_parser(
-    LPParser, titles=["PLACEHOLDER"], output_file=[{"login": {}, "password": {}, "url": {}}]
+    LPParser,
+    titles=["PLACEHOLDER"],
+    output_file={"pattern": {"login": {}, "password": {}, "url": {}}},
 )
