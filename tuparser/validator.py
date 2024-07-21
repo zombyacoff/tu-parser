@@ -27,18 +27,25 @@ def offset(value: any) -> bool:
     return isinstance(value, int) and check_range(value, Ranges.offset.value)
 
 
-def output_file(values: any) -> bool:
-    def optional_is_string(index: int) -> bool:
-        return isinstance(values[index], str) if len(values) >= index + 1 else True
+def output_file(value: any) -> bool:
+    if value is None:
+        return True
 
-    return values is None or (
-        isinstance(values, list)
-        and 1 <= len(values) <= 3
-        and isinstance(values[0], dict)
-        and all(value == {} for value in values[0].values())
-        and optional_is_string(1)
-        and optional_is_string(2)
-    )
+    if not isinstance(value, dict) or "pattern" not in value:
+        return False
+
+    pattern = value.get("pattern")
+    optional_keys = {"name", "folder_path"}
+    if not (
+        isinstance(pattern, dict)
+        and pattern
+        and all(value == {} for value in pattern.values())
+        and all(isinstance(value.get(key), str) for key in optional_keys if key in value)
+    ):
+        return False
+
+    allowed_keys = {"pattern", "name", "folder_path"}
+    return set(value.keys()).issubset(allowed_keys)
 
 
 def published_years(values: any) -> bool:
@@ -69,10 +76,7 @@ validation_rules = {
         offset,
         "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive.",
     ),
-    "output_file": ValidationRules(
-        output_file,
-        "Invalid output file value: {}\nValue must be a list with 1 to 3 elements. The first is a dictionary with empty dictionaries as values.\nThe second is the output file name. The third is the output file path. The second and third are strings.",
-    ),
+    "output_file": ValidationRules(output_file, "Invalid output file value: {}\nTODO"),
     "progress_bar": ValidationRules(
         boolean, "Invalid progress bar value: {}\nValue must be a boolean."
     ),

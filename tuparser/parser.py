@@ -30,10 +30,22 @@ class TelegraphParser(ABC):
         self.published_years = config.get("published_years")
         self.progress_bar = config.get("progress_bar")
 
-        output_file = config.get("output_file")
-        self.output_file = YAMLOutputFile(*output_file) if output_file else False
+        self.__get_output_file(config)
 
         self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
+
+    def __get_output_file(self, config: dict[str, any]) -> None:
+        output_file_config = config.get("output_file")
+        if output_file_config is None:
+            self.output_file = False
+            return
+
+        optional_keys = {"name", "folder_path"}
+        output_file_args = [output_file_config.get("pattern")] + [
+            output_file_config.get(key) for key in optional_keys if key in output_file_config
+        ]
+
+        self.output_file = YAMLOutputFile(*output_file_args)
 
     def __get_total_urls(self) -> int:
         total_days = sum(get_monthrange(month) for month in range(1, self.total_months + 1))
@@ -126,7 +138,7 @@ def run_parser(
     custom_args: list | None = None,
     messages: bool = True,
     offset: int = 1,
-    output_file: list | None = None,
+    output_file: dict | None = None,
     progress_bar: bool = True,
     published_years: list[int] | None = None,
 ) -> None:
@@ -140,8 +152,7 @@ def run_parser(
         :param custom_args: (list) arguments passed to the constructor of the parser class
         :param messages: (bool) whether to display the messages or not
         :param offset: (int) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
-        :param output_file: (list) the output file configuration. The value must be a list with 1 to 3 elements. The first is a dictionary with empty dictionaries as values.
-        The second is the output file name. The third is the output file path. The second and third are strings.
+        :param output_file: (list) the output file configuration. TODO
         :param progress_bar: (bool) whether to display a progress bar or not
         :param published_years: (list[int]) the years when the articles should be parsed. Value must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """

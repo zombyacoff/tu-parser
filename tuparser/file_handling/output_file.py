@@ -14,8 +14,7 @@ class YAMLOutputFile:
         self.folder_path = folder_path
 
         self.file_path = FileManager.join_paths(self.folder_path, self.name)
-
-        self.index = 0
+        self.index = 1
 
     def write_data(self, *data: any) -> None:
         """Writes data to the main dictionary,
@@ -25,9 +24,9 @@ class YAMLOutputFile:
 
         NOTE: the dictionary should have at least as many keys as the values passed
         """
-        self.index += 1
         for i, key in enumerate(self.main_data):
             self.main_data[key][self.index] = data[i]
+        self.index += 1
 
     def complete(self) -> None:
         FileManager.create_folder(self.folder_path)

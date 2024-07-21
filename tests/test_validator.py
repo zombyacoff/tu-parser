@@ -37,13 +37,19 @@ class TestValidator(unittest.TestCase):
 
     def test_output_file(self):
         self.assertTrue(output_file(None))
-        self.assertTrue(output_file([{"a": {}}, "b", "c"]))
+        self.assertTrue(output_file({"pattern": {"a": {}}, "name": "file.txt"}))
+        self.assertTrue(output_file({"pattern": {"a": {}}, "folder_path": "path/to/file"}))
+        self.assertTrue(
+            output_file({"pattern": {"a": {}}, "name": "file.txt", "folder_path": "path/to/file"})
+        )
 
-        self.assertFalse(output_file("not a list"))
-        self.assertFalse(output_file([{"a": "not a dict"}, "b", "c"]))
-        self.assertFalse(output_file([{"a": {"key": "not_empty"}}, "b", "c"]))
-        self.assertFalse(output_file([{"a": {}}, 1, "c"]))
-        self.assertFalse(output_file([{"a": {}}, "b", "c", "d"]))
+        self.assertFalse(output_file("not a dict"))
+        self.assertFalse(output_file({}))
+        self.assertFalse(output_file({"pattern1": {}}))
+        self.assertFalse(output_file({"pattern": {}}))
+        self.assertFalse(output_file({"pattern": {"key": "value"}}))
+        self.assertFalse(output_file({"pattern": {"a": {}}, "name": 2}))
+        self.assertFalse(output_file({"pattern": {"a": {}}, "b": "file.txt"}))
 
     def test_published_years(self):
         self.assertTrue(published_years(None))
