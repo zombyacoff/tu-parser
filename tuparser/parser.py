@@ -8,7 +8,7 @@ from tqdm.asyncio import tqdm
 
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
 from .exceptions import InvalidConfigurationError
-from .file_handling import YAMLOutputFile
+from .output_file import YAMLOutputFile
 from .utils import ConsoleColor, get_formatted_time, get_monthrange, get_time_now
 from .validator import validate
 
