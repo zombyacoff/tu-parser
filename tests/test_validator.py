@@ -2,15 +2,7 @@ import unittest
 
 from tuparser.constants import LAUNCH_TIME
 from tuparser.exceptions import InvalidConfigurationError
-from tuparser.validator import (
-    boolean,
-    ensure_valide_data,
-    offset,
-    output_file,
-    published_years,
-    titles,
-    validate,
-)
+from tuparser.validator import boolean, ensure_valide_data, offset, output_file, published_years, titles, validate
 
 
 class TestValidator(unittest.TestCase):
@@ -39,9 +31,7 @@ class TestValidator(unittest.TestCase):
         self.assertTrue(output_file(None))
         self.assertTrue(output_file({"pattern": {"a": {}}, "name": "file.txt"}))
         self.assertTrue(output_file({"pattern": {"a": {}}, "folder_path": "path/to/file"}))
-        self.assertTrue(
-            output_file({"pattern": {"a": {}}, "name": "file.txt", "folder_path": "path/to/file"})
-        )
+        self.assertTrue(output_file({"pattern": {"a": {}}, "name": "file.txt", "folder_path": "path/to/file"}))
 
         self.assertFalse(output_file("not a dict"))
         self.assertFalse(output_file({}))

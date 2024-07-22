@@ -1,6 +1,5 @@
 preview = true
-line-length = 99
-# exclude = ["parser.py"]
+line-length = 119
 
 [format]
 preview = true

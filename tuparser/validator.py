@@ -51,10 +51,7 @@ def output_file(value: any) -> bool:
 def published_years(values: any) -> bool:
     return values is None or (
         isinstance(values, list)
-        and all(
-            isinstance(value, int) and check_range(value, Ranges.published_years.value)
-            for value in values
-        )
+        and all(isinstance(value, int) and check_range(value, Ranges.published_years.value) for value in values)
     )
 
 
@@ -73,8 +70,7 @@ validation_rules = {
     "titles": ValidationRules(titles, "Invalid titles: {}\nValues must be a list without None."),
     "messages": ValidationRules(boolean, "Invalid messages value: {}\nValue must be a boolean."),
     "offset": ValidationRules(
-        offset,
-        "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive.",
+        offset, "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive."
     ),
     "output_file": ValidationRules(
         output_file,
@@ -84,9 +80,7 @@ The value must be a dictionary with 3 keys:
 "name" - the name of the output file, and "folder_path" - the path to the folder where the output file will be created.
 The type of the "name" and "folder_path" values is string.""",
     ),
-    "progress_bar": ValidationRules(
-        boolean, "Invalid progress bar value: {}\nValue must be a boolean."
-    ),
+    "progress_bar": ValidationRules(boolean, "Invalid progress bar value: {}\nValue must be a boolean."),
     "published_years": ValidationRules(
         published_years,
         "Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR].",
@@ -97,9 +91,7 @@ The type of the "name" and "folder_path" values is string.""",
 def validate(config: dict[str, any]) -> dict[str, any]:
     for param, rules in validation_rules.items():
         ensure_valide_data(
-            value=config.get(param),
-            condition=rules.condition,
-            exception_message=rules.exception_message,
+            value=config.get(param), condition=rules.condition, exception_message=rules.exception_message
         )
 
     return config

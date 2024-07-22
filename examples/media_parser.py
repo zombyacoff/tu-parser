@@ -28,11 +28,7 @@ class MediaParser(TelegraphParser):
             ...
 
     def get_urls(self, media):
-        return [
-            TELEGRAPH_URL + value.get("src")
-            for value in media
-            if not value.get("src").startswith("http")
-        ]
+        return [TELEGRAPH_URL + value.get("src") for value in media if not value.get("src").startswith("http")]
 
 
 run_parser(MediaParser, titles=["PLACEHOLDER"])

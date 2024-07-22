@@ -4,16 +4,12 @@ from .file_manager import FileManager
 
 class YAMLOutputFile:
     __slots__ = ("file_path", "folder_path", "index", "main_data", "name")
+    FORMATTED_LAUNCH_TIME = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S")
 
-    def __init__(
-        self,
-        data: dict[str | int, dict],
-        name: str = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S"),
-        folder_path: str = "output",
-    ) -> None:
-        self.main_data = data
-        self.name = f"{name}.yml"
-        self.folder_path = folder_path
+    def __init__(self, config: dict) -> None:
+        self.main_data = config.get("pattern")
+        self.name = config.get("name", f"{self.FORMATTED_LAUNCH_TIME}.yml")
+        self.folder_path = config.get("folder_path", "output")
 
         self.file_path = FileManager.join_paths(self.folder_path, self.name)
         self.index = 1
