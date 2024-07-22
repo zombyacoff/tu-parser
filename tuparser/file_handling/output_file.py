@@ -3,6 +3,8 @@ from .file_manager import FileManager
 
 
 class YAMLOutputFile:
+    __slots__ = ("file_path", "folder_path", "index", "main_data", "name")
+
     def __init__(
         self,
         data: dict[str | int, dict],

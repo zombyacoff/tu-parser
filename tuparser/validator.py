@@ -76,7 +76,14 @@ validation_rules = {
         offset,
         "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive.",
     ),
-    "output_file": ValidationRules(output_file, "Invalid output file value: {}\nTODO"),
+    "output_file": ValidationRules(
+        output_file,
+        """Invalid output file value: {}
+The value must be a dictionary with 3 keys:
+"pattern" - the pattern on which the output file will be created, the type is dictionary whose values are empty dictionaries,
+"name" - the name of the output file, and "folder_path" - the path to the folder where the output file will be created.
+The type of the "name" and "folder_path" values is string.""",
+    ),
     "progress_bar": ValidationRules(
         boolean, "Invalid progress bar value: {}\nValue must be a boolean."
     ),
