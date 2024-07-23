@@ -14,7 +14,6 @@ from .validator import validate
 
 
 class TelegraphParser(ABC):
-    HTTP_OK_STATUS = 200
     SEMAPHORE_MAX_LIMIT = 150
 
     PROGRESS_BAR_FORMAT = "|{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}]{postfix}"
@@ -48,7 +47,7 @@ class TelegraphParser(ABC):
 
     async def _validate_url(self, url: str) -> None:
         async with self.session.get(url) as page:
-            if page.status != self.HTTP_OK_STATUS:
+            if page.status != 200:
                 return
             soup = BeautifulSoup(await page.text(), "html.parser")
 
