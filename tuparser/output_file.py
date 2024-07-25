@@ -10,8 +10,8 @@ class YamlOutputFile:
 
     def __init__(
         self,
-        pattern: dict[any, dict],
         *,
+        pattern: dict[any, dict],
         name: str = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S"),
         folder_path: str = "output",
     ) -> None:
