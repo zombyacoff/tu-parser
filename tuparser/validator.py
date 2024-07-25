@@ -4,6 +4,7 @@ from typing import Callable
 
 from .constants import LAUNCH_TIME
 from .exceptions import InvalidConfigurationError
+from .output_file import YamlOutputFile
 
 
 class Ranges(Enum):
@@ -28,24 +29,7 @@ def offset(value: any) -> bool:
 
 
 def output_file(value: any) -> bool:
-    if value is None:
-        return True
-
-    if not isinstance(value, dict) or "pattern" not in value:
-        return False
-
-    pattern = value.get("pattern")
-    optional_keys = {"name", "folder_path"}
-    if not (
-        isinstance(pattern, dict)
-        and pattern
-        and all(value == {} for value in pattern.values())
-        and all(isinstance(value.get(key), str) for key in optional_keys if key in value)
-    ):
-        return False
-
-    allowed_keys = {"pattern", "name", "folder_path"}
-    return set(value.keys()).issubset(allowed_keys)
+    return value is None or isinstance(value, YamlOutputFile)
 
 
 def published_years(values: any) -> bool:
@@ -73,12 +57,7 @@ validation_rules = {
         offset, "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive."
     ),
     "output_file": ValidationRules(
-        output_file,
-        """Invalid output file value: {}
-The value must be a dictionary with 3 keys:
-"pattern" - the pattern on which the output file will be created, the type is dictionary whose values are empty dictionaries,
-"name" - the name of the output file, and "folder_path" - the path to the folder where the output file will be created.
-The type of the "name" and "folder_path" values is string.""",
+        output_file, "Invalid output file value: {}\nValue must be an instance of the YamlOutputFile class."
     ),
     "progress_bar": ValidationRules(boolean, "Invalid progress bar value: {}\nValue must be a boolean."),
     "published_years": ValidationRules(

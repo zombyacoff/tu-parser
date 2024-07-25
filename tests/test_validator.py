@@ -2,6 +2,7 @@ import unittest
 
 from tuparser.constants import LAUNCH_TIME
 from tuparser.exceptions import InvalidConfigurationError
+from tuparser.output_file import YamlOutputFile
 from tuparser.validator import boolean, ensure_valide_data, offset, output_file, published_years, titles, validate
 
 
@@ -29,17 +30,13 @@ class TestValidator(unittest.TestCase):
 
     def test_output_file(self):
         self.assertTrue(output_file(None))
-        self.assertTrue(output_file({"pattern": {"a": {}}, "name": "file.txt"}))
-        self.assertTrue(output_file({"pattern": {"a": {}}, "folder_path": "path/to/file"}))
-        self.assertTrue(output_file({"pattern": {"a": {}}, "name": "file.txt", "folder_path": "path/to/file"}))
+        self.assertTrue(output_file(YamlOutputFile(pattern={"pattern": {}})))
 
-        self.assertFalse(output_file("not a dict"))
-        self.assertFalse(output_file({}))
-        self.assertFalse(output_file({"pattern1": {}}))
-        self.assertFalse(output_file({"pattern": {}}))
-        self.assertFalse(output_file({"pattern": {"key": "value"}}))
-        self.assertFalse(output_file({"pattern": {"a": {}}, "name": 2}))
-        self.assertFalse(output_file({"pattern": {"a": {}}, "b": "file.txt"}))
+        self.assertFalse(output_file("not a YamlOutputFile"))
+
+        with self.assertRaises(TypeError):
+            output_file(YamlOutputFile({"pattern": {}}))
+            output_file(YamlOutputFile(name="str"))
 
     def test_published_years(self):
         self.assertTrue(published_years(None))
@@ -70,7 +67,7 @@ class TestValidator(unittest.TestCase):
             "titles": [None, "title2"],
             "messages": "True",
             "offset": 251,
-            "output_file": [{"key": "value"}, "path1"],
+            "output_file": "invalid output file",
             "progress_bar": "False",
             "published_years": [-1, 2020],
         }

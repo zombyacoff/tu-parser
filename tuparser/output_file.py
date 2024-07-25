@@ -5,13 +5,19 @@ from yaml import dump as yaml_dump
 from .constants import LAUNCH_TIME
 
 
-class YAMLOutputFile:
+class YamlOutputFile:
     __slots__ = ("file_path", "folder_path", "index", "main_data", "name")
 
-    def __init__(self, config: dict) -> None:
-        self.main_data = config.get("pattern")
-        self.name = f"{config.get("name", LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S"))}.yml"
-        self.folder_path = config.get("folder_path", "output")
+    def __init__(
+        self,
+        pattern: dict[any, dict],
+        *,
+        name: str = LAUNCH_TIME.strftime("%d-%m-%Y-%H-%M-%S"),
+        folder_path: str = "output",
+    ) -> None:
+        self.main_data = pattern
+        self.name = f"{name}.yml"
+        self.folder_path = folder_path
 
         self.file_path = path.join(self.folder_path, self.name)
         self.index = 1

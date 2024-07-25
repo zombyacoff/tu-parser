@@ -1,6 +1,6 @@
 import re
 
-from tuparser import TelegraphParser, run_parser
+from tuparser import TelegraphParser, YamlOutputFile, run_parser
 
 EXCEPTIONS = ["dmca@telegram.org"]
 
@@ -37,4 +37,4 @@ class LPParser(TelegraphParser):
         return login, password
 
 
-run_parser(LPParser, titles=["PLACEHOLDER"], output_file={"pattern": {"login": {}, "password": {}, "url": {}}})
+run_parser(LPParser, titles=["PLACEHOLDER"], output_file=YamlOutputFile({"login": {}, "password": {}, "url": {}}))
