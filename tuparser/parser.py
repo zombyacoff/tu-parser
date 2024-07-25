@@ -9,7 +9,7 @@ from tqdm.asyncio import tqdm
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
 from .exceptions import InvalidConfigurationError
 from .output_file import YamlOutputFile
-from .utils import ConsoleColor, get_formatted_time, get_monthrange, get_time_now
+from .utils import ConsoleColor, get_monthrange, get_time_now
 from .validator import validate
 
 
@@ -97,7 +97,7 @@ class TelegraphParser(ABC):
         asyncio.run(self._url_processing())
 
         if self.messages:
-            elapsed_time = get_formatted_time(get_time_now() - LAUNCH_TIME)
+            elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
             print(
                 ConsoleColor.paint_success(self.SUCCESS_COMPLETE_TITLE),
                 ConsoleColor.paint_info(self.TIME_ELAPSED_TEXT.format(elapsed_time)),

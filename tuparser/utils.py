@@ -1,18 +1,12 @@
 import re
 from calendar import monthrange
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from termcolor import colored
 
 
 def get_time_now() -> datetime:
     return datetime.now()
-
-
-def get_formatted_time(time: timedelta) -> str:
-    hours, remainder = divmod(time.seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
 
 def get_monthrange(month: int) -> int:
