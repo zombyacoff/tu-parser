@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 import tuparser
 
@@ -22,7 +22,7 @@ setup(
         **Telegraph Universal Parser (tu-parser)** is a flexible module designed for creating custom parsers for the [Telegraph]({tuparser.TELEGRAPH_URL}) website.
         """),
     long_description_content_type="text/markdown",
-    packages=find_packages(),
+    packages=["tuparser"],
     install_requires=get_requirements(),
     python_requires=">=3.12",
     classifiers=[
