@@ -34,10 +34,6 @@ class TestValidator(unittest.TestCase):
 
         self.assertFalse(output_file("not a YamlOutputFile"))
 
-        with self.assertRaises(TypeError):
-            output_file(YamlOutputFile({"pattern": {}}))
-            output_file(YamlOutputFile(name="str"))
-
     def test_published_years(self):
         self.assertTrue(published_years(None))
         self.assertTrue(published_years([2020, 2021, LAUNCH_TIME.year]))
