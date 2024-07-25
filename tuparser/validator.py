@@ -39,7 +39,7 @@ def published_years(values: any) -> bool:
     )
 
 
-def ensure_valide_data(*, value: any, condition: Callable, exception_message: str) -> None:
+def ensure_valide_data(value: any, condition: Callable, exception_message: str) -> None:
     if not condition(value):
         raise InvalidConfigurationError(exception_message.format(value))
 
@@ -69,8 +69,6 @@ validation_rules = {
 
 def validate(config: dict[str, any]) -> dict[str, any]:
     for param, rules in validation_rules.items():
-        ensure_valide_data(
-            value=config.get(param), condition=rules.condition, exception_message=rules.exception_message
-        )
+        ensure_valide_data(config.get(param), rules.condition, rules.exception_message)
 
     return config
