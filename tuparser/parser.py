@@ -46,7 +46,7 @@ class TelegraphParser(ABC):
                 for offset in range(1, self.offset + 1):
                     for title in self.titles:
                         url = f"{TELEGRAPH_URL}/{title}-{month:02}-{day:02}"
-                        yield (f"{url}-{offset}" if offset > 1 else url)
+                        yield (url if offset == 1 else f"{url}-{offset}")
 
     async def _validate_url(self, url: str) -> None:
         async with self.session.get(url) as page:
@@ -75,6 +75,7 @@ class TelegraphParser(ABC):
                     total=self._get_total_urls(),
                     bar_format=self.PROGRESS_BAR_FORMAT,
                     unit="urls",
+                    dynamic_ncols=True,
                     leave=False,
                 )
                 if self.progress_bar
