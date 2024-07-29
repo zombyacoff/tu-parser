@@ -23,10 +23,11 @@ class YamlOutputFile:
         self.index = 1
 
     def write_data(self, *data: any) -> None:
-        """Writes data to the main dictionary,
+        """
+        Writes data to the main dictionary,
         which will be stored in a YAML output file after parsing
 
-        Example: write_data('Alexey', 'Yaroslav', 'TUParser')
+        >>> write_data("Alexey", "Yaroslav", "TUParser")
 
         NOTE: the dictionary should have at least as many keys as the values passed
         """

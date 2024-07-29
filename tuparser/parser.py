@@ -120,7 +120,8 @@ def run_parser(
     progress_bar: bool = True,
     published_years: list[int] | None = None,
 ) -> None:
-    """Starts the parser
+    """
+    Starts the parser
 
     Required arguments:
         :param parser_class: (TelegraphParser) the parser class, which must inherit from TelegraphParser
@@ -133,7 +134,7 @@ def run_parser(
         :param output_file: (YamlOutputFile) the output file configuration. Value must be an instance of the YamlOutputFile class
         :param progress_bar: (bool) whether to display a progress bar or not
         :param published_years: (list[int]) the years when the articles should be parsed.\
-    Value must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
+        Value must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """
 
     try:
