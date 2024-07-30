@@ -17,7 +17,7 @@ class TelegraphParser(ABC):
     SEMAPHORE_MAX_LIMIT = 150
 
     PROGRESS_BAR_FORMAT = (
-        "|{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}]{postfix}"
+        "|{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] ({elapsed} < {remaining} | {rate_fmt}){postfix}"
     )
 
     def __init__(self, config: dict[str, any]) -> None:
@@ -71,7 +71,7 @@ class TelegraphParser(ABC):
                     asyncio.as_completed(tasks),
                     total=self._get_total_urls(),
                     bar_format=self.PROGRESS_BAR_FORMAT,
-                    unit="urls",
+                    unit="URLs",
                     dynamic_ncols=True,
                     leave=False,
                 )
