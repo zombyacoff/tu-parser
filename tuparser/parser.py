@@ -89,7 +89,8 @@ class TelegraphParser(ABC):
             self.output_file.complete()
 
     @abstractmethod
-    async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
+    async def parse(self, url: str, soup: BeautifulSoup) -> None:
+        pass
 
     def main(self) -> None:
         if self.messages:
@@ -99,14 +100,16 @@ class TelegraphParser(ABC):
 
         if self.messages:
             elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
-            print(
-                ConsoleColor.paint_success(self.SUCCESS_COMPLETE_TITLE),
-                ConsoleColor.paint_info(self.TIME_ELAPSED_TEXT.format(elapsed_time)),
-                sep="\n",
+            complete_message = (
+                f"{ConsoleColor.paint_success(self.SUCCESS_COMPLETE_TITLE)}\n"
+                f"{ConsoleColor.paint_info(self.TIME_ELAPSED_TEXT.format(elapsed_time))}"
             )
-
-            if self.output_file:
-                print(ConsoleColor.paint_info(self.OUTPUT_FILE_PATH_TEXT.format(self.output_file.file_path)))
+            output_file_message = (
+                f"\n{ConsoleColor.paint_info(self.OUTPUT_FILE_PATH_TEXT.format(self.output_file.file_path))}"
+                if self.output_file
+                else ""
+            )
+            print(complete_message + output_file_message)
 
 
 def run_parser(
