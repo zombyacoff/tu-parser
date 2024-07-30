@@ -20,11 +20,6 @@ class TelegraphParser(ABC):
         "|{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] [{elapsed} < {remaining} : {rate_fmt}]{postfix}"
     )
 
-    PARSING_START_MESSAGE = "Parsing has started...\nDo not turn off the program until the process is completed!"
-    SUCCESS_COMPLETE_TITLE = "SUCCESSFULLY COMPLETED"
-    TIME_ELAPSED_TEXT = "Time elapsed: {}"
-    OUTPUT_FILE_PATH_TEXT = "Output file path: {}"
-
     def __init__(self, config: dict[str, any]) -> None:
         self.__dict__.update(config)
         self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
@@ -70,7 +65,9 @@ class TelegraphParser(ABC):
         async with aiohttp.ClientSession() as self.session:
             tasks = [self._semaphore_process(url, semaphore) for url in urls_generator]
             completed_tasks = (
-                tqdm(
+                asyncio.as_completed(tasks)
+                if not self.progress_bar
+                else tqdm(
                     asyncio.as_completed(tasks),
                     total=self._get_total_urls(),
                     bar_format=self.PROGRESS_BAR_FORMAT,
@@ -78,8 +75,6 @@ class TelegraphParser(ABC):
                     dynamic_ncols=True,
                     leave=False,
                 )
-                if self.progress_bar
-                else asyncio.as_completed(tasks)
             )
 
             for task in completed_tasks:
@@ -93,23 +88,29 @@ class TelegraphParser(ABC):
         pass
 
     def main(self) -> None:
-        if self.messages:
-            print(ConsoleColor.paint_info(self.PARSING_START_MESSAGE), end="\n\n")
+        if not self.messages:
+            asyncio.run(self._url_processing())
+            return
+
+        print(
+            ConsoleColor.paint_info(
+                "Parsing has started...\nDo not turn off the program until the process is completed!\n"
+            )
+        )
 
         asyncio.run(self._url_processing())
 
-        if self.messages:
-            elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
-            complete_message = (
-                f"{ConsoleColor.paint_success(self.SUCCESS_COMPLETE_TITLE)}\n"
-                f"{ConsoleColor.paint_info(self.TIME_ELAPSED_TEXT.format(elapsed_time))}"
-            )
-            output_file_message = (
-                f"\n{ConsoleColor.paint_info(self.OUTPUT_FILE_PATH_TEXT.format(self.output_file.file_path))}"
-                if self.output_file
-                else ""
-            )
-            print(complete_message + output_file_message)
+        elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
+        complete_message = (
+            f"{ConsoleColor.paint_success("SUCCESSFULLY COMPLETED")}\n"
+            f"{ConsoleColor.paint_info(f"Time elapsed: {elapsed_time}")}"
+        )
+        output_file_info = (
+            f"\n{ConsoleColor.paint_info(f'Output file path: {self.output_file.file_path}')}"
+            if self.output_file
+            else ""
+        )
+        print(complete_message + output_file_info)
 
 
 def run_parser(
