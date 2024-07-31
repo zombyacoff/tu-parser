@@ -65,9 +65,7 @@ class TelegraphParser(ABC):
         async with aiohttp.ClientSession() as self.session:
             tasks = [self._semaphore_process(url, semaphore) for url in urls_generator]
             completed_tasks = (
-                asyncio.as_completed(tasks)
-                if not self.progress_bar
-                else tqdm(
+                tqdm(
                     asyncio.as_completed(tasks),
                     total=self._get_total_urls(),
                     bar_format=self.PROGRESS_BAR_FORMAT,
@@ -75,6 +73,8 @@ class TelegraphParser(ABC):
                     dynamic_ncols=True,
                     leave=False,
                 )
+                if self.progress_bar
+                else asyncio.as_completed(tasks)
             )
 
             for task in completed_tasks:
@@ -101,16 +101,14 @@ class TelegraphParser(ABC):
         asyncio.run(self._url_processing())
 
         elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
-        complete_message = (
-            f"{ConsoleColor.paint_success("SUCCESSFULLY COMPLETED")}\n"
-            f"{ConsoleColor.paint_info(f"Time elapsed: {elapsed_time}")}"
+        print(
+            ConsoleColor.paint_success("SUCCESSFULLY COMPLETED"),
+            ConsoleColor.paint_info(f"Time elapsed: {elapsed_time}"),
+            sep="\n",
         )
-        output_file_info = (
-            f"\n{ConsoleColor.paint_info(f'Output file path: {self.output_file.file_path}')}"
-            if self.output_file
-            else ""
-        )
-        print(complete_message + output_file_info)
+
+        if self.output_file:
+            print(ConsoleColor.paint_info(f"Output file path: {self.output_file.file_path}"))
 
 
 def run_parser(
