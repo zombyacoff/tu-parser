@@ -10,7 +10,7 @@ from .constants import LAUNCH_TIME, TELEGRAPH_URL
 from .exceptions import InvalidConfigurationError
 from .output_file import YamlOutputFile
 from .utils import ConsoleColor, get_monthrange, get_time_now
-from .validator import validate
+from .validator import validate_config
 
 
 class TelegraphParser(ABC):
@@ -138,9 +138,8 @@ def run_parser(
         :param published_years: (list[int]) the years when the articles should be parsed.\
         Value must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
     """
-
     try:
-        config = validate({
+        config = validate_config({
             "titles": titles,
             "messages": messages,
             "offset": offset,
@@ -149,7 +148,7 @@ def run_parser(
             "published_years": published_years,
         })
     except InvalidConfigurationError as exception:
-        exception.get_error_message(exception)
+        print(exception)
     else:
         parser = parser_class(config) if custom_args is None else parser_class(config, *custom_args)
         parser.main()
