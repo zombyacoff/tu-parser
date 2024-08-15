@@ -1,8 +1,8 @@
 from .constants import TELEGRAPH_MIRROR_URL, TELEGRAPH_URL
 from .output_file import YamlOutputFile
-from .parser import TelegraphParser, run_parser
+from .parser import TelegraphParser
 
-__all__ = ["TELEGRAPH_MIRROR_URL", "TELEGRAPH_URL", "TelegraphParser", "YamlOutputFile", "run_parser"]
+__all__ = ["TELEGRAPH_MIRROR_URL", "TELEGRAPH_URL", "TelegraphParser", "YamlOutputFile"]
 
 # This information is used in the setup.py file:
 __version__ = "1.0.0"

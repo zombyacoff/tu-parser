@@ -1,74 +1,45 @@
-from dataclasses import dataclass
-from enum import Enum
-from typing import Callable
+from abc import ABC, abstractmethod
 
 from .constants import LAUNCH_TIME
-from .exceptions import InvalidConfigurationError
 from .output_file import YamlOutputFile
 
 
-class Ranges(Enum):
-    offset = (1, 250)
-    published_years = (0, LAUNCH_TIME.year)
+class Validator(ABC):
+    def __get__(self, obj, objtype=None) -> any:
+        return self.value
+
+    def __set__(self, obj, value: any) -> any:
+        self.validate(value)
+        self.value = value
+
+    @abstractmethod
+    def validate(self, value: any) -> None: ...
 
 
-def is_within_range(value: int, value_range: tuple[int, int]) -> bool:
-    return value_range[0] <= value <= value_range[1]
+class TitlesValidation(Validator):
+    def validate(self, value: list) -> None:
+        if not isinstance(value, list) or not value:
+            raise TypeError("Titles must be a non-empty list")
 
 
-def titles(values: any) -> bool:
-    return isinstance(values, list) and all(value is not None for value in values)
+class OffsetValidation(Validator):
+    MAX_OFFSET = 250
+
+    def validate(self, value: int) -> None:
+        if not isinstance(value, int) or not (1 <= value <= self.MAX_OFFSET):
+            raise ValueError(f"Offset must be an integer between 1 and {self.MAX_OFFSET}")
 
 
-def boolean(value: any) -> bool:
-    return isinstance(value, bool)
+class OutputFileValidation(Validator):
+    def validate(self, value: YamlOutputFile | None) -> None:
+        if value is not None and not isinstance(value, YamlOutputFile):
+            raise ValueError("Output file must be an instance of YamlOutputFile or None")
 
 
-def offset(value: any) -> bool:
-    return isinstance(value, int) and is_within_range(value, Ranges.offset.value)
-
-
-def output_file(value: any) -> bool:
-    return value is None or isinstance(value, YamlOutputFile)
-
-
-def published_years(values: any) -> bool:
-    return values is None or (
-        isinstance(values, list)
-        and all(isinstance(value, int) and is_within_range(value, Ranges.published_years.value) for value in values)
-    )
-
-
-def ensure_valid_data(value: any, condition: Callable, exception_message: str) -> None:
-    if not condition(value):
-        raise InvalidConfigurationError(exception_message.format(value))
-
-
-@dataclass
-class ValidationRule:
-    condition: Callable
-    exception_message: str
-
-
-validation_rules = {
-    "titles": ValidationRule(titles, "Invalid titles: {}\nValues must be a list without None."),
-    "messages": ValidationRule(boolean, "Invalid messages value: {}\nValue must be a boolean."),
-    "offset": ValidationRule(
-        offset, "Invalid offset: {}\nValue must be an integer and must be between 1 and 250 inclusive."
-    ),
-    "output_file": ValidationRule(
-        output_file, "Invalid output file value: {}\nValue must be an instance of the YamlOutputFile class."
-    ),
-    "progress_bar": ValidationRule(boolean, "Invalid progress bar value: {}\nValue must be a boolean."),
-    "published_years": ValidationRule(
-        published_years,
-        "Invalid release dates: {}\nValues must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR].",
-    ),
-}
-
-
-def validate_config(config: dict[str, any]) -> dict[str, any]:
-    for param, rules in validation_rules.items():
-        ensure_valid_data(config.get(param), rules.condition, rules.exception_message)
-
-    return config
+class PublishedYearsValidation(Validator):
+    def validate(self, values: list[int] | None) -> None:
+        if values is not None and (
+            not isinstance(values, list)
+            or any(not isinstance(value, int) or not (0 <= value <= LAUNCH_TIME.year) for value in values)
+        ):
+            raise ValueError(f"Published years must be a list of integers between 0 and {LAUNCH_TIME.year}")
