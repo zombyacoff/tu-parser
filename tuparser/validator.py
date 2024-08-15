@@ -19,7 +19,7 @@ class Validator(ABC):
 class TitlesValidation(Validator):
     def validate(self, value: list) -> None:
         if not isinstance(value, list) or not value:
-            raise TypeError("Titles must be a non-empty list")
+            raise ValueError("Titles must be a non-empty list")
 
 
 class OffsetValidation(Validator):
@@ -42,4 +42,4 @@ class PublishedYearsValidation(Validator):
             not isinstance(values, list)
             or any(not isinstance(value, int) or not (0 <= value <= LAUNCH_TIME.year) for value in values)
         ):
-            raise ValueError(f"Published years must be a list of integers between 0 and {LAUNCH_TIME.year}")
+            raise ValueError(f"Published years must be a list of integers between 0 and {LAUNCH_TIME.year} or None")
