@@ -5,6 +5,8 @@ from .output_file import YamlOutputFile
 
 
 class Validator(ABC):
+    __slots__ = ("value",)
+
     def __get__(self, obj, objtype=None) -> any:
         return self.value
 
@@ -37,9 +39,9 @@ class OutputFileValidation(Validator):
 
 
 class PublishedYearsValidation(Validator):
-    def validate(self, values: list[int] | None) -> None:
-        if values is not None and (
-            not isinstance(values, list)
-            or any(not isinstance(value, int) or not (0 <= value <= LAUNCH_TIME.year) for value in values)
+    def validate(self, value: list[int] | None) -> None:
+        if value is not None and (
+            not isinstance(value, list)
+            or any(not isinstance(year, int) or not (0 <= year <= LAUNCH_TIME.year) for year in value)
         ):
             raise ValueError(f"Published years must be a list of integers between 0 and {LAUNCH_TIME.year} or None")
