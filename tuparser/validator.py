@@ -35,7 +35,7 @@ class OffsetValidation(Validator):
 class OutputFileValidation(Validator):
     def validate(self, value: YamlOutputFile | None) -> None:
         if value is not None and not isinstance(value, YamlOutputFile):
-            raise ValueError("Output file must be an instance of YamlOutputFile or None")
+            raise ValueError("Output file must be an instance of YamlOutputFile")
 
 
 class PublishedYearsValidation(Validator):
@@ -44,4 +44,4 @@ class PublishedYearsValidation(Validator):
             not isinstance(value, list)
             or any(not isinstance(year, int) or not (0 <= year <= LAUNCH_TIME.year) for year in value)
         ):
-            raise ValueError(f"Published years must be a list of integers between 0 and {LAUNCH_TIME.year} or None")
+            raise ValueError(f"Published years must be a list of integers between 0 and {LAUNCH_TIME.year}")
