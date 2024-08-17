@@ -23,25 +23,6 @@ class TelegraphParser(ABC):
     output_file = OutputFileValidation()
     published_years = PublishedYearsValidation()
 
-    def __init__(
-        self,
-        *,
-        titles: list,
-        messages: bool = True,
-        offset: int = 1,
-        output_file: YamlOutputFile | None = None,
-        progress_bar: bool = True,
-        published_years: list[int] | None = None,
-    ) -> None:
-        self.titles = titles
-        self.messages = messages
-        self.offset = offset
-        self.output_file = output_file
-        self.progress_bar = progress_bar
-        self.published_years = published_years
-
-        self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
-
     def _get_total_urls(self) -> int:
         total_days = sum(get_days_in_month(month) for month in range(1, self.total_months + 1))
         return len(self.titles) * self.offset * total_days
@@ -104,16 +85,37 @@ class TelegraphParser(ABC):
     @abstractmethod
     async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
 
-    def run(self) -> None:
+    def run(
+        self,
+        *,
+        titles: list,
+        messages: bool = True,
+        offset: int = 1,
+        output_file: YamlOutputFile | None = None,
+        progress_bar: bool = True,
+        published_years: list[int] | None = None,
+    ) -> None:
+        self.titles = titles
+        self.messages = messages
+        self.offset = offset
+        self.output_file = output_file
+        self.progress_bar = progress_bar
+        self.published_years = published_years
+
+        self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
+
         if not self.messages:
             asyncio.run(self._url_processing())
             return
 
-        print("Parsing has started...\nDo not turn off the program until the process is completed!\n")
+        print("""Parsing has started...
+Do not turn off the program until the process is completed!
+""")
         asyncio.run(self._url_processing())
 
         elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
-        print(f"SUCCESSFULLY COMPLETED\nTime elapsed: {elapsed_time}")
+        print(f"""SUCCESSFULLY COMPLETED
+Time elapsed: {elapsed_time}""")
 
         if self.output_file:
             print(f"Output file path: {self.output_file.file_path}")
