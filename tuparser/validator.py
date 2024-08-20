@@ -10,7 +10,7 @@ class Validator(ABC):
     def __get__(self, obj, objtype=None) -> any:
         return self.value
 
-    def __set__(self, obj, value: any) -> any:
+    def __set__(self, obj, value: any) -> None:
         self.validate(value)
         self.value = value
 
