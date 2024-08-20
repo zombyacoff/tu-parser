@@ -37,4 +37,4 @@ class LPParser(TelegraphParser):
         return login, password
 
 
-LPParser(titles=["PLACEHOLDER"], output_file=YamlOutputFile(pattern={"login": {}, "password": {}, "url": {}})).run()
+LPParser().run(titles=["PLACEHOLDER"], output_file=YamlOutputFile(pattern={"login": {}, "password": {}, "url": {}}))

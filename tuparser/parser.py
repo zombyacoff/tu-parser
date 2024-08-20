@@ -96,7 +96,6 @@ class TelegraphParser(ABC):
         published_years: list[int] | None = None,
     ) -> None:
         self.titles = titles
-        self.messages = messages
         self.offset = offset
         self.output_file = output_file
         self.progress_bar = progress_bar
@@ -104,18 +103,15 @@ class TelegraphParser(ABC):
 
         self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
 
-        if not self.messages:
+        if not messages:
             asyncio.run(self._url_processing())
             return
 
-        print("""Parsing has started...
-Do not turn off the program until the process is completed!
-""")
+        print("Parsing has started...\nDo not turn off the program until the process is completed!")
         asyncio.run(self._url_processing())
 
         elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
-        print(f"""SUCCESSFULLY COMPLETED
-Time elapsed: {elapsed_time}""")
+        print(f"SUCCESSFULLY COMPLETED\nTime elapsed: {elapsed_time}")
 
         if self.output_file:
             print(f"Output file path: {self.output_file.file_path}")

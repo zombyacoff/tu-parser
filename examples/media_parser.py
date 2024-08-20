@@ -33,4 +33,4 @@ class MediaParser(TelegraphParser):
                 ...
 
 
-MediaParser(titles=["PLACEHOLDER"]).run()
+MediaParser().run(titles=["PLACEHOLDER"])
