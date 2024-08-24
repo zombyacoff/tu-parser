@@ -25,11 +25,9 @@ class TitlesValidation(Validator):
 
 
 class OffsetValidation(Validator):
-    MAX_OFFSET = 250
-
     def validate(self, value: int) -> None:
-        if not isinstance(value, int) or not (1 <= value <= self.MAX_OFFSET):
-            raise ValueError(f"Offset must be an integer between 1 and {self.MAX_OFFSET}")
+        if not isinstance(value, int) or not (1 <= value <= 250):
+            raise ValueError("Offset must be an integer between 1 and 250")
 
 
 class OutputFileValidation(Validator):

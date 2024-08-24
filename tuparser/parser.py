@@ -111,7 +111,7 @@ class TelegraphParser(ABC):
         asyncio.run(self._url_processing())
 
         elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
-        print(f"SUCCESSFULLY COMPLETED\nTime elapsed: {elapsed_time}")
+        print(f"Successfully completed! ({elapsed_time})")
 
         if self.output_file:
             print(f"Output file path: {self.output_file.file_path}")
