@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from .constants import LAUNCH_TIME
-from .output_file import YamlOutputFile
 
 
 class Validator(ABC):
@@ -28,12 +27,6 @@ class OffsetValidation(Validator):
     def validate(self, value: int) -> None:
         if not isinstance(value, int) or not (1 <= value <= 250):
             raise ValueError("Offset must be an integer between 1 and 250")
-
-
-class OutputFileValidation(Validator):
-    def validate(self, value: YamlOutputFile | None) -> None:
-        if value is not None and not isinstance(value, YamlOutputFile):
-            raise ValueError("Output file must be an instance of YamlOutputFile")
 
 
 class PublishedYearsValidation(Validator):

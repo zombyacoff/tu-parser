@@ -7,9 +7,8 @@ from bs4 import BeautifulSoup
 from tqdm.asyncio import tqdm
 
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
-from .output_file import YamlOutputFile
 from .utils import get_days_in_month, get_time_now
-from .validator import OffsetValidation, OutputFileValidation, PublishedYearsValidation, TitlesValidation
+from .validator import OffsetValidation, PublishedYearsValidation, TitlesValidation
 
 
 class TelegraphParser(ABC):
@@ -20,7 +19,6 @@ class TelegraphParser(ABC):
 
     titles = TitlesValidation()
     offset = OffsetValidation()
-    output_file = OutputFileValidation()
     published_years = PublishedYearsValidation()
 
     def _get_total_urls(self) -> int:
@@ -79,9 +77,6 @@ class TelegraphParser(ABC):
             for task in completed_tasks:
                 await task
 
-        if self.output_file:
-            self.output_file.complete()
-
     @abstractmethod
     async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
 
@@ -91,13 +86,11 @@ class TelegraphParser(ABC):
         titles: list,
         messages: bool = True,
         offset: int = 1,
-        output_file: YamlOutputFile | None = None,
         progress_bar: bool = True,
         published_years: list[int] | None = None,
     ) -> None:
         self.titles = titles
         self.offset = offset
-        self.output_file = output_file
         self.progress_bar = progress_bar
         self.published_years = published_years
 
@@ -108,10 +101,8 @@ class TelegraphParser(ABC):
             return
 
         print("Parsing has started...\nDo not turn off the program until the process is completed!")
+
         asyncio.run(self._url_processing())
 
         elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
         print(f"Successfully completed! ({elapsed_time})")
-
-        if self.output_file:
-            print(f"Output file path: {self.output_file.file_path}")

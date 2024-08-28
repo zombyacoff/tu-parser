@@ -1,3 +1,7 @@
+#
+# Outdated version
+#
+
 import re
 
 from tuparser import TelegraphParser, YamlOutputFile
