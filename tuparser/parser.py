@@ -49,7 +49,10 @@ class TelegraphParser(ABC):
         if not self._check_published_year(soup):
             return
 
-        await self.parse(url, soup)
+        self.url = url
+        self.soup = soup
+
+        await self.parse()
 
     async def _semaphore_process(self, url: str, semaphore: asyncio.Semaphore) -> None:
         async with semaphore:
@@ -78,7 +81,7 @@ class TelegraphParser(ABC):
                 await task
 
     @abstractmethod
-    async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
+    async def parse(self) -> None: ...
 
     def run(
         self,

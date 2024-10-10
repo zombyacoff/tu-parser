@@ -6,10 +6,10 @@ from tuparser import TELEGRAPH_URL, TelegraphParser
 
 
 class MediaParser(TelegraphParser):
-    async def parse(self, url, soup):
-        self.article = url.split("/")[-1]
-        images = self.get_urls(soup.find_all("img"))
-        videos = self.get_urls(soup.find_all("video"))
+    async def parse(self):
+        self.article = self.url.split("/")[-1]
+        images = self.get_urls(self.soup.find_all("img"))
+        videos = self.get_urls(self.soup.find_all("video"))
 
         if images:
             await self.download_media(images, "images", "gif")
