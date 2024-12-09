@@ -7,25 +7,22 @@ from bs4 import BeautifulSoup
 from tqdm.asyncio import tqdm
 
 from .constants import LAUNCH_TIME, TELEGRAPH_URL
-from .exceptions import InvalidConfigurationError
-from .output_file import YamlOutputFile
-from .utils import ConsoleColor, get_monthrange, get_time_now
-from .validator import validate_config
+from .utils import get_days_in_month, get_time_now
+from .validator import OffsetValidation, PublishedYearsValidation, TitlesValidation
 
 
 class TelegraphParser(ABC):
     SEMAPHORE_MAX_LIMIT = 150
-
     PROGRESS_BAR_FORMAT = (
         "|{bar:50}| {percentage:.2f}% [{n_fmt}/{total_fmt}] ({elapsed} < {remaining} | {rate_fmt}){postfix}"
     )
 
-    def __init__(self, config: dict[str, any]) -> None:
-        self.__dict__.update(config)
-        self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
+    titles = TitlesValidation()
+    offset = OffsetValidation()
+    published_years = PublishedYearsValidation()
 
     def _get_total_urls(self) -> int:
-        total_days = sum(get_monthrange(month) for month in range(1, self.total_months + 1))
+        total_days = sum(get_days_in_month(month) for month in range(1, self.total_months + 1))
         return len(self.titles) * self.offset * total_days
 
     def _check_published_year(self, soup: BeautifulSoup) -> bool:
@@ -37,7 +34,7 @@ class TelegraphParser(ABC):
 
     def _generate_urls(self) -> Generator[str, None, None]:
         for month in range(1, self.total_months + 1):
-            for day in range(1, get_monthrange(month) + 1):
+            for day in range(1, get_days_in_month(month) + 1):
                 for offset in range(1, self.offset + 1):
                     for title in self.titles:
                         url = f"{TELEGRAPH_URL}/{title}-{month:02}-{day:02}"
@@ -52,7 +49,10 @@ class TelegraphParser(ABC):
         if not self._check_published_year(soup):
             return
 
-        await self.parse(url, soup)
+        self.url = url
+        self.soup = soup
+
+        await self.parse()
 
     async def _semaphore_process(self, url: str, semaphore: asyncio.Semaphore) -> None:
         async with semaphore:
@@ -80,75 +80,32 @@ class TelegraphParser(ABC):
             for task in completed_tasks:
                 await task
 
-        if self.output_file:
-            self.output_file.complete()
-
     @abstractmethod
-    async def parse(self, url: str, soup: BeautifulSoup) -> None:
-        pass
+    async def parse(self) -> None: ...
 
-    def main(self) -> None:
-        if not self.messages:
+    def run(
+        self,
+        *,
+        titles: list,
+        messages: bool = True,
+        offset: int = 1,
+        progress_bar: bool = True,
+        published_years: list[int] | None = None,
+    ) -> None:
+        self.titles = titles
+        self.offset = offset
+        self.progress_bar = progress_bar
+        self.published_years = published_years
+
+        self.total_months = LAUNCH_TIME.month if self.published_years == [LAUNCH_TIME.year] else 12
+
+        if not messages:
             asyncio.run(self._url_processing())
             return
 
-        print(
-            ConsoleColor.paint_info(
-                "Parsing has started...\nDo not turn off the program until the process is completed!\n"
-            )
-        )
+        print("Parsing has started...\nDo not turn off the program until the process is completed!")
 
         asyncio.run(self._url_processing())
 
         elapsed_time = str(get_time_now() - LAUNCH_TIME)[:7]
-        print(
-            ConsoleColor.paint_success("SUCCESSFULLY COMPLETED"),
-            ConsoleColor.paint_info(f"Time elapsed: {elapsed_time}"),
-            sep="\n",
-        )
-
-        if self.output_file:
-            print(ConsoleColor.paint_info(f"Output file path: {self.output_file.file_path}"))
-
-
-def run_parser(
-    parser_class: TelegraphParser,
-    *,
-    titles: list,
-    custom_args: list | None = None,
-    messages: bool = True,
-    offset: int = 1,
-    output_file: YamlOutputFile | None = None,
-    progress_bar: bool = True,
-    published_years: list[int] | None = None,
-) -> None:
-    """
-    Starts the parser
-
-    Required arguments:
-        :param parser_class: (TelegraphParser) the parser class, which must inherit from TelegraphParser
-        :param titles: (list) the titles of the telegraph articles. Value must be a list without None
-
-    Optional configuration arguments:
-        :param custom_args: (list) arguments passed to the constructor of the parser class
-        :param messages: (bool) whether to display the messages or not
-        :param offset: (int) the number of articles to parse per day. Value must be an integer and must be between 1 and 250 inclusive
-        :param output_file: (YamlOutputFile) the output file configuration. Value must be an instance of the YamlOutputFile class
-        :param progress_bar: (bool) whether to display a progress bar or not
-        :param published_years: (list[int]) the years when the articles should be parsed.\
-        Value must be a list of integers and must be within the specified range [0, LAUNCH_TIME_YEAR]
-    """
-    try:
-        config = validate_config({
-            "titles": titles,
-            "messages": messages,
-            "offset": offset,
-            "output_file": output_file,
-            "progress_bar": progress_bar,
-            "published_years": published_years,
-        })
-    except InvalidConfigurationError as exception:
-        print(exception)
-    else:
-        parser = parser_class(config) if custom_args is None else parser_class(config, *custom_args)
-        parser.main()
+        print(f"Successfully completed! ({elapsed_time})")

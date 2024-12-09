@@ -2,8 +2,6 @@ from textwrap import dedent
 
 from setuptools import setup
 
-import tuparser
-
 
 def get_requirements(file_name: str = "requirements.txt") -> list[str]:
     with open(file_name, "r") as file:
@@ -12,10 +10,10 @@ def get_requirements(file_name: str = "requirements.txt") -> list[str]:
 
 setup(
     name="tuparser",
-    version=tuparser.__version__,
-    author=tuparser.__author__,
-    author_email=tuparser.__email__,
-    url=tuparser.__git_url__,
+    version="1.0.0",
+    author="zombyacoff",
+    author_email="zombyacoff@gmail.com",
+    url="https://github.com/zombyacoff/tu-parser",
     description="A flexible module for building custom parsers for the Telegraph website",
     long_description=dedent(f"""\
         # Telegraph Universal Parser
