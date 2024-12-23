@@ -15,9 +15,9 @@ setup(
     author_email="zombyacoff@gmail.com",
     url="https://github.com/zombyacoff/tu-parser",
     description="A flexible module for building custom parsers for the Telegraph website",
-    long_description=dedent(f"""\
+    long_description=dedent("""\
         # Telegraph Universal Parser
-        **Telegraph Universal Parser (tu-parser)** is a flexible module designed for creating custom parsers for the [Telegraph]({tuparser.TELEGRAPH_URL}) website.
+        **Telegraph Universal Parser (tu-parser)** is a flexible module designed for creating custom parsers for the [Telegraph](https://telegra.ph) website.
         """),
     long_description_content_type="text/markdown",
     packages=["tuparser"],
