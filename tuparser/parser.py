@@ -38,7 +38,7 @@ class TelegraphParser(ABC):
                 for offset in range(1, self.offset + 1):
                     for title in self.titles:
                         url = f"{TELEGRAPH_URL}/{title}-{month:02}-{day:02}"
-                        yield (url if offset == 1 else f"{url}-{offset}")
+                        yield url if offset == 1 else f"{url}-{offset}"
 
     async def _validate_url(self, url: str) -> None:
         async with self.session.get(url) as page:
@@ -49,10 +49,7 @@ class TelegraphParser(ABC):
         if not self._check_published_year(soup):
             return
 
-        self.url = url
-        self.soup = soup
-
-        await self.parse()
+        await self.parse(url, soup)
 
     async def _semaphore_process(self, url: str, semaphore: asyncio.Semaphore) -> None:
         async with semaphore:
@@ -81,7 +78,7 @@ class TelegraphParser(ABC):
                 await task
 
     @abstractmethod
-    async def parse(self) -> None: ...
+    async def parse(self, url: str, soup: BeautifulSoup) -> None: ...
 
     def run(
         self,
